@@ -30,7 +30,7 @@ using namespace std;
 
 namespace Parless
 {
-	const char* VERSION = "2.0.2";
+	const char* VERSION = "2.0.3";
 	
 	t_CriBind(*hook_BindCpk);
 	t_CriBind org_BindCpk = NULL;
@@ -546,6 +546,10 @@ void InitializeScripts()
 			string path;
 			path += string("mods/") + string(it->second) + string(it->first);
 
+			string initStr;
+			initStr += "Initializing script file " + path;
+			cout << initStr << std::endl;
+
 			HINSTANCE asiScript = LoadLibraryA(path.c_str());
 
 			if (asiScript)
@@ -556,7 +560,18 @@ void InitializeScripts()
 					asiInitFunc();
 			}
 			else
-				cout << "Script LoadLibrary fail: " << path.c_str() << " Error Code: " << GetLastError() << endl;
+			{
+				int errCode = GetLastError();
+				cout << "Script LoadLibrary fail: " << path.c_str() << " Error Code: " << errCode << endl;
+
+				string errorMsg;
+				errorMsg += string("Failed to load ASI script ");
+				errorMsg += path;
+				errorMsg += string(" Error Code ");
+				errorMsg += errCode;
+
+				MessageBoxA(0, errorMsg.c_str(), "ASI Error", 0);
+			}
 		}
 	}
 }
