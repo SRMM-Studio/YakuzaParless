@@ -30,7 +30,7 @@ using namespace std;
 
 namespace Parless
 {
-	const char* VERSION = "2.0.3";
+	const char* VERSION = "2.0.4";
 	
 	t_CriBind(*hook_BindCpk);
 	t_CriBind org_BindCpk = NULL;
@@ -175,9 +175,8 @@ namespace Parless
 					}
 					else
 					{
-#if DEBUG
-						cout << "Par not found: " << override << std::endl;
-#endif
+						if(logParless)
+							cout << "Par not found: " << override << std::endl;
 					}
 				}
 			}

@@ -16,6 +16,7 @@ public:
 
 		return 	parless_stringmap({
 				{"/font" , "/fontpar/font"},
+				{"/2d/ui_" + loc2, "/2dpar/ui_" + loc2},
 				{"/2d/sprite_" + loc2 , "/2dpar/sprite_" + loc2},
 				{"/boot" , "/bootpar/boot"},
 				{"/stay" , "/staypar/stay"},

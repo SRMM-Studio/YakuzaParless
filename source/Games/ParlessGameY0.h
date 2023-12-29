@@ -9,12 +9,17 @@ public:
 
 	virtual parless_stringmap get_game_map(Locale locale) override
 	{
+		std::vector<const char*> locVec{ "e", "j", "z", "k" };
 		std::vector<const char*> loc2Vec{ "c", "j", "z", "k" };
+
+		std::string loc = locVec[(int)locale]; 
 		std::string loc2 = loc2Vec[(int)locale];
 
 		return 	parless_stringmap({
 				{"/font" , "/fontpar/font"},
+				{"/2d/ui_" + loc, "/2dpar/ui_" + loc},
 				{"/2d/sprite_" + loc2 , "/2dpar/sprite_" + loc2},
+				{"/pause_" + loc, "/pausepar_" + loc + "/pause"},
 				{"/boot" , "/bootpar/boot"},
 				{"/stay" , "/staypar/stay"},
 				{"/sound" , "/soundpar/sound"},
