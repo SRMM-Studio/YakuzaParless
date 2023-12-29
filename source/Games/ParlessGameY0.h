@@ -19,7 +19,6 @@ public:
 				{"/font" , "/fontpar/font"},
 				{"/2d/ui_" + loc, "/2dpar/ui_" + loc},
 				{"/2d/sprite_" + loc2 , "/2dpar/sprite_" + loc2},
-				{"/pause_" + loc, "/pausepar_" + loc + "/pause"},
 				{"/boot" , "/bootpar/boot"},
 				{"/stay" , "/staypar/stay"},
 				{"/sound" , "/soundpar/sound"},
