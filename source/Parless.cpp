@@ -567,7 +567,7 @@ void InitializeScripts()
 				errorMsg += string("Failed to load ASI script ");
 				errorMsg += path;
 				errorMsg += string(" Error Code ");
-				errorMsg += errCode;
+				errorMsg += std::to_string(errCode);
 
 				MessageBoxA(0, errorMsg.c_str(), "ASI Error", 0);
 			}
@@ -629,19 +629,6 @@ void Reload()
 	}
 
 	cout << endl;
-}
-
-void UpdateThread()
-{
-	while (true)
-	{
-		//L CTRL + L SHIFT + Q
-		if ((GetAsyncKeyState(VK_LCONTROL) & 0x8000) == 0x8000 && (GetAsyncKeyState(VK_LSHIFT) & 0x8000) == 0x8000 && GetAsyncKeyState('Q') == -32767)
-		{
-			std::cout << "Got input to SRMM reload" << std::endl;
-			Reload();
-		}
-	}
 }
 
 void OnInitializeHook()
@@ -836,8 +823,6 @@ void OnInitializeHook()
 	modsLoaded = true;
 
 	cout << "Hook function finished.\n";
-	std::thread thread(UpdateThread);
-	thread.detach();
 }
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
