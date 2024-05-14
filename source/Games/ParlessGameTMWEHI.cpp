@@ -12,6 +12,9 @@ using namespace Memory;
 ParlessGameTMWEHI::t_orgGaidenAddFileEntry ParlessGameTMWEHI::orgGaidenAddFileEntry = NULL;
 ParlessGameTMWEHI::t_orgGaidenAddFileEntry(*ParlessGameTMWEHI::hookGaidenAddFileEntry) = NULL;
 
+ParlessGameTMWEHI::t_orgGDGetEntityPath ParlessGameTMWEHI::orgGDGetEntityPath = NULL;
+ParlessGameTMWEHI::t_orgGDGetEntityPath(*ParlessGameTMWEHI::hookGDGetEntityPath) = NULL;
+
 bool ParlessGameTMWEHI::hook_add_file()
 {
 	if (!isXbox)
@@ -26,6 +29,20 @@ bool ParlessGameTMWEHI::hook_add_file()
 	}
 
 	if (MH_EnableHook(hookGaidenAddFileEntry) != MH_OK)
+	{
+		cout << "Hook could not be enabled. Aborting.\n";
+		return false;
+	}
+
+	hookGDGetEntityPath = (t_orgGDGetEntityPath*)pattern("48 89 5C 24 08 48 89 74 24 10 48 89 7C 24 18 41 56 48 83 EC ? 44 89 C7 48 89 CB").get_first(0);
+
+	if (MH_CreateHook(hookGDGetEntityPath, &GaidenGetEntityPath, reinterpret_cast<LPVOID*>(&orgGDGetEntityPath)) != MH_OK)
+	{
+		cout << "Hook creation failed. Aborting.\n";
+		return false;
+	}
+
+	if (MH_EnableHook(hookGDGetEntityPath) != MH_OK)
 	{
 		cout << "Hook could not be enabled. Aborting.\n";
 		return false;

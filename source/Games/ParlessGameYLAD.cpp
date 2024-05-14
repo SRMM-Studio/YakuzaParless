@@ -13,6 +13,9 @@ ParlessGameYLAD::t_orgYLaDAddFileEntry* ParlessGameYLAD::hookYLaDAddFileEntry = 
 ParlessGameYLAD::t_orgYLaDFilepath ParlessGameYLAD::orgYLaDFilepath = NULL;
 ParlessGameYLAD::t_orgYLaDFilepath* ParlessGameYLAD::hookYLaDFilepath = NULL;
 
+ParlessGameYLAD::t_orgYLADGetEntityPath ParlessGameYLAD::orgYLADGetEntityPath = NULL;
+ParlessGameYLAD::t_orgYLADGetEntityPath(*ParlessGameYLAD::hookYLADGetEntityPath) = NULL;
+
 bool ParlessGameYLAD::hook_add_file()
 {
 	void* renameFilePathsFunc;
@@ -64,6 +67,20 @@ bool ParlessGameYLAD::hook_add_file()
 
 	if (MH_EnableHook(hookYLaDFilepath) != MH_OK)
 		return false;
+
+	hookYLADGetEntityPath = (t_orgYLADGetEntityPath*)pattern("48 89 5C 24 08 48 89 74 24 10 57 48 83 EC ? 0F B7 FA 48 8B F1").get_first(0);
+
+	if (MH_CreateHook(hookYLADGetEntityPath, &YLaDGetEntityPath, reinterpret_cast<LPVOID*>(&orgYLADGetEntityPath)) != MH_OK)
+	{
+		std::cout << "Hook creation failed. Aborting.\n";
+		return false;
+	}
+
+	if (MH_EnableHook(hookYLADGetEntityPath) != MH_OK)
+	{
+		std::cout << "Hook could not be enabled. Aborting.\n";
+		return false;
+	}
 
 	return true;
 }

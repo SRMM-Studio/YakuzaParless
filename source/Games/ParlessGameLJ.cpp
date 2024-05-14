@@ -12,6 +12,9 @@ using namespace Memory;
 ParlessGameLJ::t_orgLJAddFileEntry ParlessGameLJ::orgLJAddFileEntry = NULL;
 ParlessGameLJ::t_orgLJAddFileEntry(*ParlessGameLJ::hookLJAddFileEntry) = NULL;
 
+ParlessGameLJ::t_orgLJGetEntityPath ParlessGameLJ::orgLJGetEntityPath = NULL;
+ParlessGameLJ::t_orgLJGetEntityPath(*ParlessGameLJ::hookLJGetEntityPath) = NULL;
+
 bool ParlessGameLJ::hook_add_file()
 {
 	hookLJAddFileEntry = (t_orgLJAddFileEntry*)pattern("41 57 48 8D A8 68 FE FF FF 48 81 EC 58 02 00 00 C5 F8 29 70 A8").get_first(-20);
@@ -43,6 +46,20 @@ bool ParlessGameLJ::hook_add_file()
 	if (MH_EnableHook(hook_BindCpk) != MH_OK)
 	{
 		std::cout << "Hook could not be enabled. Aborting.\n";
+		return false;
+	}
+
+	hookLJGetEntityPath = (t_orgLJGetEntityPath*)pattern("48 89 5C 24 08 48 89 74 24 10 48 89 7C 24 18 41 56 48 83 EC ? 41 8B F8 48 8B D9 0F B7 F2").get_first(0);
+
+	if (MH_CreateHook(hookLJGetEntityPath, &LJGetEntityPath, reinterpret_cast<LPVOID*>(&orgLJGetEntityPath)) != MH_OK)
+	{
+		cout << "Hook creation failed. Aborting.\n";
+		return false;
+	}
+
+	if (MH_EnableHook(hookLJGetEntityPath) != MH_OK)
+	{
+		cout << "Hook could not be enabled. Aborting.\n";
 		return false;
 	}
 

@@ -30,7 +30,7 @@ using namespace std;
 
 namespace Parless
 {
-	const char* VERSION = "2.0.4";
+	const char* VERSION = "2.0.5";
 	
 	t_CriBind(*hook_BindCpk);
 	t_CriBind org_BindCpk = NULL;
@@ -564,10 +564,25 @@ void InitializeScripts()
 				cout << "Script LoadLibrary fail: " << path.c_str() << " Error Code: " << errCode << endl;
 
 				string errorMsg;
-				errorMsg += string("Failed to load ASI script ");
-				errorMsg += path;
-				errorMsg += string(" Error Code ");
-				errorMsg += std::to_string(errCode);
+
+				switch (errCode)
+				{
+				default:
+				{
+					errorMsg += string("Failed to load ASI script ");
+					errorMsg += path;
+					errorMsg += string(" Error Code ");
+					errorMsg += std::to_string(errCode);
+					break;
+				};
+
+				case 225:
+				{
+					errorMsg += "Failed to load ASI script because it was marked as a virus.\nMost likely a false positive! Try unblocking and trying again.";
+					break;
+				};
+				}
+
 
 				MessageBoxA(0, errorMsg.c_str(), "ASI Error", 0);
 			}

@@ -37,6 +37,10 @@ private:
 	static t_orgYLaDFilepath orgYLaDFilepath;
 	static t_orgYLaDFilepath(*hookYLaDFilepath);
 
+	typedef int (*t_orgYLADGetEntityPath)(char* in_path, unsigned int e_kind, unsigned int stageid, unsigned int daynight, void* uid);
+	static t_orgYLADGetEntityPath orgYLADGetEntityPath;
+	static t_orgYLADGetEntityPath(*hookYLADGetEntityPath);
+
 	static char* YLaDAddFileEntry(char* a1, uint64_t a2, char* a3, char* a4)
 	{
 		char* result = orgYLaDAddFileEntry(a1, a2, a3, a4);
@@ -48,5 +52,13 @@ private:
 	{
 		RenameFilePaths(a3);
 		orgYLaDFilepath(a1, a2, a3, a4);
+	}
+
+	static int YLaDGetEntityPath(char* in_path, unsigned int e_kind, unsigned int stageid, unsigned int daynight, __int64* uid)
+	{
+		orgYLADGetEntityPath(in_path, e_kind, stageid, daynight, uid);
+		RenameFilePaths(in_path);
+
+		return 0;
 	}
 };

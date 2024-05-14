@@ -30,11 +30,19 @@ public:
 
 	static __int64 (*orgOOEAddFileEntry)(__int64 a1, __int64 filepath, __int64 a3, int a4, __int64 a5, __int64 a6, int a7, __int64 a8, int a9, char a10, int a11, char a12);
 	static __int64 (*orgOOEAdxEntry)(__int64 a1, __int64 a2, __int64 a3);
+	static __int64 (*orgOOEUSMEntry)(__int64 a1, const char* filepath, __int64 a3);
 
 	static __int64 OOEAddFileEntry(__int64 a1, __int64 filepath, __int64 a3, int a4, __int64 a5, __int64 a6, int a7, __int64 a8, int a9, char a10, int a11, char a12)
 	{
 		RenameFilePaths((char*)filepath);
 		return orgOOEAddFileEntry(a1, filepath, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12);
+	}
+
+	static __int64 OOEUSMEntry(__int64 a1, const char* filepath, __int64 a3)
+	{
+		RenameFilePaths((char*)filepath);
+		__int64 result = orgOOEUSMEntry(a1, filepath, a3);
+		return result;
 	}
 
 	static __int64 OOEAdxEntry(__int64 filepath, __int64 a2, __int64 a3)

@@ -30,13 +30,26 @@ public:
 	bool hook_add_file() override;
 
 	typedef int (*t_orgGaidenAddFileEntry)(short* a1, int a2, char* a3, char** a4);
+	typedef int (*t_orgGDGetEntityPath)(char* in_path, unsigned int e_kind, unsigned int stageid, unsigned int daynight, void* uid);
+
 	static t_orgGaidenAddFileEntry orgGaidenAddFileEntry;
 	static t_orgGaidenAddFileEntry(*hookGaidenAddFileEntry);
+
+	static t_orgGDGetEntityPath orgGDGetEntityPath;
+	static t_orgGDGetEntityPath(*hookGDGetEntityPath);
 
 	static int GaidenAddFileEntry(short* a1, int a2, char* a3, char** a4)
 	{
 		orgGaidenAddFileEntry(a1, a2, a3, a4);
 		RenameFilePaths((char*)a1);
 		return strlen((char*)a1);
+	}
+
+	static int GaidenGetEntityPath(char* in_path, unsigned int e_kind, unsigned int stageid, unsigned int daynight, __int64* uid)
+	{
+		orgGDGetEntityPath(in_path, e_kind, stageid, daynight, uid);
+		RenameFilePaths(in_path);
+
+		return 0;
 	}
 };

@@ -30,13 +30,26 @@ public:
 	bool hook_add_file() override;
 
 	typedef int (*t_orgIWAddFileEntry)(short* a1, int a2, char* a3, char** a4);
+	typedef int (*t_orgIWGetEntityPath)(char* in_path, unsigned int e_kind, unsigned int stageid, unsigned int daynight, void* uid);
+	
 	static t_orgIWAddFileEntry orgIWAddFileEntry;
 	static t_orgIWAddFileEntry(*hookIWAddFileEntry);
+
+	static t_orgIWGetEntityPath orgIWGetEntityPath;
+	static t_orgIWGetEntityPath(*hookIWGetEntityPath);
 
 	static int IWAddFileEntry(short* a1, int a2, char* a3, char** a4)
 	{
 		orgIWAddFileEntry(a1, a2, a3, a4);
 		RenameFilePaths((char*)a1);
 		return strlen((char*)a1);
+	}
+
+	static int IWGetEntityPath(char* in_path, unsigned int e_kind, unsigned int stageid, unsigned int daynight, __int64* uid)
+	{
+		orgIWGetEntityPath(in_path, e_kind, stageid, daynight, uid);
+		RenameFilePaths(in_path);
+
+		return 0;
 	}
 };
