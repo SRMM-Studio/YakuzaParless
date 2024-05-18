@@ -26,8 +26,6 @@
 
 static HMODULE hDLLModule;
 
-using namespace std;
-
 namespace Parless
 {
 	const char* VERSION = "2.0.5";
@@ -105,6 +103,9 @@ namespace Parless
 	bool logParless;
 	bool logAll;
 	bool ignoreNonPaths;
+
+
+	bool rebuildingMLO = false;
 
 	/// <summary>
 	/// Renames file paths to load files from the mods directory or .parless paths instead of pars.
@@ -387,19 +388,20 @@ namespace Parless
 
 void RebuildMLO()
 {
-	SHELLEXECUTEINFOA ShExecInfo = { 0 };
-	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-	ShExecInfo.hwnd = NULL;
-	ShExecInfo.lpVerb = NULL;
-	ShExecInfo.lpFile = "RyuModManager.exe";
-	ShExecInfo.lpParameters = "-s";
-	ShExecInfo.lpDirectory = NULL;
-	ShExecInfo.nShow = SW_HIDE;
-	ShExecInfo.hInstApp = NULL;
-	ShellExecuteExA(&ShExecInfo);
-	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
-	CloseHandle(ShExecInfo.hProcess);
+	STARTUPINFOA info = { sizeof(info) };
+	PROCESS_INFORMATION processInfo;
+
+	char cmdArgs[] = "ShinRyuModManager.exe -s";
+	if (CreateProcessA("ShinRyuModManager.exe", cmdArgs, NULL, NULL, TRUE, 0, NULL, NULL, &info, &processInfo))
+	{
+		WaitForSingleObject(processInfo.hProcess, INFINITE);
+		CloseHandle(processInfo.hProcess);
+		CloseHandle(processInfo.hThread);
+	}
+	else
+	{
+		std::cout << " Failed to start the process!";
+	}
 }
 
 void ReadModLoadOrder()
@@ -604,16 +606,18 @@ void Reload()
 	if (rebuildMLO)
 	{
 		//Rebuilding MLO is only problematic when we initialize through winmm.dll
+		/*
 		if (std::filesystem::exists("winmm.dll"))
 		{
 			cout << "Not rebuilding MLO because it is unsupported by this game." << endl;
 		}
-		else
-		{
+		*/
+		//else
+		//{
 			cout << "Rebuilding MLO... ";
 			RebuildMLO();
 			cout << "DONE!\n";
-		}
+		//}
 	}
 
 	// Read MLO file
@@ -712,10 +716,10 @@ void OnInitializeHook()
 		return;
 
 	//Important for winmm
-	if (currentGameName == "RyuModManagerGUI")
+	if (startsWith(currentGameName, "RyuMod"))
 		return;
 
-	if (currentGameName == "RyuModManager")
+	if (startsWith(currentGameName, "ShinRyu"))
 		return;
 
 
