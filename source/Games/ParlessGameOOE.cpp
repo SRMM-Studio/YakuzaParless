@@ -21,7 +21,12 @@ bool ParlessGameOOE::hook_add_file()
 	Trampoline* trampoline = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
 
 	renameFilePathsFunc = get_pattern("66 89 83 44 02 00 00 E8 ? ? ? ? 48 8B C3 48 8B 8C 24 A0 03 00 00", -5);
-	renameUSMFilePathsFunc = Memory::ReadCallFrom(get_pattern("E8 ? ? ? ? EB ? 49 8B C6 48 89 45 40"));
+
+	if (!isXbox)
+		renameUSMFilePathsFunc = Memory::ReadCallFrom(get_pattern("E8 ? ? ? ? EB ? 49 8B C6 48 89 45 40"));
+	else
+		renameUSMFilePathsFunc = Memory::ReadCallFrom(get_pattern("E8 ? ? ? ? 48 8B C8 EB ? 33 C9 48 89 8F B0 01 00 00"));
+
 	ReadCall(renameFilePathsFunc, orgOOEAddFileEntry);
 
 	InjectHook(renameFilePathsFunc, trampoline->Jump(OOEAddFileEntry));

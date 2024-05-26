@@ -27,6 +27,7 @@ public:
 
 	bool isXbox;
 	bool isUwp;
+	bool isGOG;
 
 	virtual std::string get_name();
 	virtual bool can_rebuild_mlo();

@@ -36,11 +36,7 @@ bool ParlessGameY6::hook_add_file()
 
 	// Hook inside the method that calculates a string's length to add 0x20 bytes to the length
 	// This is needed to prevent undefined behavior when the modified path is longer than the memory allocated to it
-	
-	
-	auto stringLenAddrPat = pattern("8B CD 3B D9 77 47");
 	void* stringLenAddr = 0;
-	bool isGOG = GetModuleHandle(L"galaxy64") != nullptr;
 
 	//GOG
 	if (!isGOG)

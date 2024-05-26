@@ -28,7 +28,7 @@ static HMODULE hDLLModule;
 
 namespace Parless
 {
-	const char* VERSION = "2.0.5";
+	const char* VERSION = "2.1.0";
 	
 	t_CriBind(*hook_BindCpk);
 	t_CriBind org_BindCpk = NULL;
@@ -71,6 +71,7 @@ namespace Parless
 	// Mod paths will be relative to the ASI's directory instead of the game's directory (to support undumped UWP games)
 	bool isUwp;
 	bool isXbox;
+	bool isGOG;
 
 	bool hasRepackedPars;
 
@@ -731,13 +732,19 @@ void OnInitializeHook()
 		freopen_s(&fDummy, "CONOUT$", "w", stdout);
 	}
 
-	if (wstr.find(L"WindowsApps") != std::wstring::npos)
-	{
+	if (wstr.find(L"WindowsApps") != std::wstring::npos || std::filesystem::exists("MicrosoftGame.config"))
 		Parless::isXbox = true;
-		std::cout << "Game is GamePass/MS Store version" << std::endl;
-	}
+
+	if (GetModuleHandle(L"galaxy64") != nullptr)
+		Parless::isGOG = true;
 
 	cout << "Game Name: " << currentGameName << endl;
+
+	if (Parless::isXbox)
+		cout << "Gamepass/Xbox Edition" << endl;
+
+	if (Parless::isGOG)
+		cout << "GOG Edition" << endl;
 
 	currentGame = getGame(currentGameName);
 	currentParlessGame = get_parless_game(currentGame);
@@ -747,6 +754,7 @@ void OnInitializeHook()
 	currentParlessGame->locale = currentLocale;
 	currentParlessGame->isUwp = isUwp;
 	currentParlessGame->isXbox = isXbox;
+	currentParlessGame->isGOG = isGOG;
 	currentParlessGame->parless_rename_func = &RenameFilePaths;
 	currentParlessGame->parless_cpk_bind_path_func = &BindCpkPaths;
 	currentParlessGame->init();
