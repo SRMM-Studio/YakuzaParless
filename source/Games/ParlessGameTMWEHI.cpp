@@ -34,7 +34,10 @@ bool ParlessGameTMWEHI::hook_add_file()
 		return false;
 	}
 
-	hookGDGetEntityPath = (t_orgGDGetEntityPath*)pattern("48 89 5C 24 08 48 89 74 24 10 48 89 7C 24 18 41 56 48 83 EC ? 44 89 C7 48 89 CB").get_first(0);
+	if(!isXbox)
+		hookGDGetEntityPath = (t_orgGDGetEntityPath*)pattern("48 89 5C 24 08 48 89 74 24 10 48 89 7C 24 18 41 56 48 83 EC ? 44 89 C7 48 89 CB").get_first(0);
+	else
+		hookGDGetEntityPath = (t_orgGDGetEntityPath*)pattern("0F B7 F2 48 89 CF 45 85 C0 75 09 48 8D").get_first(-15);
 
 	if (MH_CreateHook(hookGDGetEntityPath, &GaidenGetEntityPath, reinterpret_cast<LPVOID*>(&orgGDGetEntityPath)) != MH_OK)
 	{
