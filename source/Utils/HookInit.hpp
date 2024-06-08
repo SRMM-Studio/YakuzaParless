@@ -149,7 +149,9 @@ extern "C"
 	__declspec(dllexport) void InitializeASI()
 	{
 		if ( _InterlockedCompareExchange(&InitCount, 1, 0) != 0 ) return;
-		HookInit::InstallHooks();
+
+		//08.06.2024: Broke Gamepass Gaiden, back to DllMain initialization!
+		//HookInit::InstallHooks();
 	}
 
 #if defined(rsc_RevisionID) && defined(rsc_BuildID)

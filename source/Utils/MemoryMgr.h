@@ -49,15 +49,6 @@ namespace Memory
 	inline void		Patch(AT address, T value)
 	{*(T*)address = value; }
 
-#ifndef _MEMORY_NO_CRT
-	template<typename AT>
-	inline void		Patch(AT address, std::initializer_list<uint8_t> list )
-	{
-		uint8_t* addr = reinterpret_cast<uint8_t*>(address);
-		std::copy( list.begin(), list.end(), stdext::make_checked_array_iterator(addr, list.size()) );
-	}
-#endif
-
 	template<typename AT>
 	inline void		Nop(AT address, size_t count)
 #ifndef _MEMORY_NO_CRT
@@ -111,21 +102,6 @@ namespace Memory
 		uintptr_t addr;
 		ReadCall( address, addr );
 		return reinterpret_cast<void*>( addr + offset );
-	}
-
-#ifndef _MEMORY_NO_CRT
-	inline bool MemEquals(uintptr_t address, std::initializer_list<uint8_t> val)
-	{
-		const uint8_t* mem = reinterpret_cast<const uint8_t*>(address);
-		return std::equal( val.begin(), val.end(), stdext::make_checked_array_iterator(mem, val.size()) );
-	}
-#endif
-
-	template<typename AT>
-	inline AT Verify(AT address, uintptr_t expected)
-	{
-		assert( uintptr_t(address) == expected );
-		return address;
 	}
 
 	namespace DynBase
@@ -185,19 +161,6 @@ namespace Memory
 		{
 			return Memory::ReadCallFrom(DynBaseAddress(address), offset);
 		}
-
-#ifndef _MEMORY_NO_CRT
-		inline bool MemEquals(uintptr_t address, std::initializer_list<uint8_t> val)
-		{
-			return Memory::MemEquals(DynBaseAddress(address), std::move(val));
-		}
-
-		template<typename AT>
-		inline AT Verify(AT address, uintptr_t expected)
-		{
-			return Memory::Verify(address, DynBaseAddress(expected));
-		}
-#endif
 	};
 
 	namespace VP
@@ -279,19 +242,6 @@ namespace Memory
 			return Memory::ReadCallFrom(address, offset);
 		}
 
-#ifndef _MEMORY_NO_CRT
-		inline bool MemEquals(uintptr_t address, std::initializer_list<uint8_t> val)
-		{
-			return Memory::MemEquals(address, std::move(val));
-		}
-#endif
-
-		template<typename AT>
-		inline AT Verify(AT address, uintptr_t expected)
-		{
-			return Memory::Verify(address, expected);
-		}
-
 		namespace DynBase
 		{
 			template<typename T, typename AT>
@@ -349,20 +299,6 @@ namespace Memory
 			{
 				Memory::ReadCallFrom(DynBaseAddress(address), offset);
 			}
-
-#ifndef _MEMORY_NO_CRT
-			inline bool MemEquals(uintptr_t address, std::initializer_list<uint8_t> val)
-			{
-				return Memory::MemEquals(DynBaseAddress(address), std::move(val));
-			}
-#endif
-
-			template<typename AT>
-			inline AT Verify(AT address, uintptr_t expected)
-			{
-				return Memory::Verify(address, DynBaseAddress(expected));
-			}
-
 		};
 	};
 };
