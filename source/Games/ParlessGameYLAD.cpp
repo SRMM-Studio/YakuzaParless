@@ -22,15 +22,14 @@ bool ParlessGameYLAD::hook_add_file()
 
 	// Y7 need hooks for two different functions
 
-// File loading hook
-	if (isUwp)
+	// File loading hook
+	if (isUwp || isXbox)
 	{
 		renameFilePathsFunc = get_pattern("48 83 EC 28 4C 8B C2 4C 8D 4C 24 40 BA 10 04 00 00 E8", 17);
 	}
 	else
 	{
 		auto pat = pattern("48 89 54 24 10 4C 89 44 24 18 4C 89 4C 24 20 48 83 EC 28 4C 8B C2 4C 8D 4C 24 40 BA 10 04 00 00 E8");
-
 		// Try the UWP pattern if the main pattern doesn't match
 		if (pat.size() < 5)
 		{
@@ -51,7 +50,7 @@ bool ParlessGameYLAD::hook_add_file()
 		return false;
 
 	// Filepath hook
-	if (isUwp)
+	if (isUwp || isXbox)
 	{
 		renameFilePathsFunc = get_pattern("44 8D 4F 03 BA 10 04 00 00 4C 8D 84 24 50 06 00 00 48 8D 8C 24 60 0A 00 00 E8", 25);
 	}
@@ -68,7 +67,10 @@ bool ParlessGameYLAD::hook_add_file()
 	if (MH_EnableHook(hookYLaDFilepath) != MH_OK)
 		return false;
 
-	hookYLADGetEntityPath = (t_orgYLADGetEntityPath*)pattern("48 89 5C 24 08 48 89 74 24 10 57 48 83 EC ? 0F B7 FA 48 8B F1").get_first(0);
+	if(!isXbox)
+		hookYLADGetEntityPath = (t_orgYLADGetEntityPath*)pattern("48 89 5C 24 08 48 89 74 24 10 57 48 83 EC ? 0F B7 FA 48 8B F1").get_first(0);
+	else
+		hookYLADGetEntityPath = (t_orgYLADGetEntityPath*)pattern("0F B7 FA 48 8B F1 45 85 C0 75 09 48 8D").get_first(-15);
 
 	if (MH_CreateHook(hookYLADGetEntityPath, &YLaDGetEntityPath, reinterpret_cast<LPVOID*>(&orgYLADGetEntityPath)) != MH_OK)
 	{
@@ -81,6 +83,8 @@ bool ParlessGameYLAD::hook_add_file()
 		std::cout << "Hook could not be enabled. Aborting.\n";
 		return false;
 	}
+
+
 
 	return true;
 }

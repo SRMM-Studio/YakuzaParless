@@ -28,7 +28,7 @@ static HMODULE hDLLModule;
 
 namespace Parless
 {
-	const char* VERSION = "2.1.0";
+	const char* VERSION = "2.1.1";
 	
 	t_CriBind(*hook_BindCpk);
 	t_CriBind org_BindCpk = NULL;
@@ -48,6 +48,7 @@ namespace Parless
 
 	bool modsLoaded;
 
+	std::vector<string> mods;
 	stringmap gameMap;
 	stringmap fileModMap;
 	unordered_map<string, vector<string>> cpkModMap;
@@ -470,7 +471,6 @@ void ReadModLoadOrder()
 
 		mlo.seekg(modNameStart);
 
-		vector<string> mods;
 		for (int i = 0; i < modCount; i++)
 		{
 			mlo.read((char*)&length, sizeof(length));
@@ -732,7 +732,7 @@ void OnInitializeHook()
 		freopen_s(&fDummy, "CONOUT$", "w", stdout);
 	}
 
-	if (wstr.find(L"WindowsApps") != std::wstring::npos || std::filesystem::exists("MicrosoftGame.config"))
+	if (wstr.find(L"WindowsApps") != std::wstring::npos || wstr.find(L"Xbox") != std::wstring::npos || std::filesystem::exists("MicrosoftGame.config"))
 		Parless::isXbox = true;
 
 	if (GetModuleHandle(L"galaxy64") != nullptr)
@@ -742,9 +742,10 @@ void OnInitializeHook()
 
 	if (Parless::isXbox)
 		cout << "Gamepass/Xbox Edition" << endl;
-
-	if (Parless::isGOG)
+	else if (Parless::isGOG)
 		cout << "GOG Edition" << endl;
+	else
+		cout << "Steam Edition" << endl;
 
 	currentGame = getGame(currentGameName);
 	currentParlessGame = get_parless_game(currentGame);
@@ -877,18 +878,32 @@ extern "C"
 		return Parless::modsLoaded;
 	}
 
-	__declspec(dllexport) bool YP_GET_NUM_MODS()
+	__declspec(dllexport) unsigned int YP_GET_NUM_MODS()
+	{
+		return Parless::mods.size();
+	}
+
+	__declspec(dllexport) unsigned int YP_GET_NUM_MOD_FILES()
 	{
 		return Parless::fileModMap.size();
 	}
 
+
 	__declspec(dllexport) const char* YP_GET_MOD_NAME(unsigned int modIndex)
 	{
 		if (modIndex > YP_GET_NUM_MODS())
-			return nullptr;
+			return "";
+
+		return Parless::mods[modIndex].c_str();
+	}
+
+	__declspec(dllexport) const char* YP_GET_MOD_FILE(unsigned int fileIdx)
+	{
+		if (fileIdx > YP_GET_NUM_MODS())
+			return "";
 
 		auto it = Parless::fileModMap.begin();
-		std::advance(it, modIndex);
+		std::advance(it, fileIdx);
 
 		return it->first.c_str();
 	}
