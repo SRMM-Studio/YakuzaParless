@@ -5,6 +5,8 @@
 #include "Utils/Patterns.h"
 #include <MinHook.h>
 #include <iostream>
+#include "Utils/buffer.h"
+#include <string>
 
 using namespace hook;
 using namespace Memory;
@@ -50,6 +52,17 @@ bool ParlessGameIW::hook_add_file()
 			cout << "Hook could not be enabled. Aborting.\n";
 			return false;
 		}
+	}
+
+	if (redirectUbik)
+	{
+		long** ubikAddr = (long**)Memory::ReadOffsetValue2(((BYTE*)pattern("66 ? ? 22 01 00 00 48 ? ? ? ? ? ? 83 ? A0 00 00 00 00 48").get_first() + 7));
+		const char* szUbik = (const char*)*ubikAddr;
+		void* block = AllocateBuffer((void*)szUbik);
+
+		memcpy_s(block, strlen(modded_ubik_path), (void*)modded_ubik_path, strlen(modded_ubik_path));
+
+		*ubikAddr = (long*)block;
 	}
 
 	*((char*)orgIWAddFileEntry) = 0x48;

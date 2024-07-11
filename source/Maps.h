@@ -33,21 +33,21 @@ enum class Game
 
 Game getGame(string name)
 {
+	std::transform(name.begin(), name.end(), name.begin(), ::tolower);
 
-	if (startsWith(name, "Yakuza3")) return Game::Yakuza3;
-	if (startsWith(name, "Yakuza4")) return Game::Yakuza4;
-	if (startsWith(name, "Yakuza5")) return Game::Yakuza5;
-	if (startsWith(name, "Yakuza0")) return Game::Yakuza0;
-	if (name == "YakuzaKiwami") return Game::YakuzaKiwami;
-	if (startsWith(name, "Yakuza6")) return Game::Yakuza6;
-	if (startsWith(name, "YakuzaKiwami2")) return Game::YakuzaKiwami2;
-	if (name == "YakuzaLikeADragon") return Game::YakuzaLikeADragon;
+	if (startsWith(name, "yakuza3")) return Game::Yakuza3;
+	if (startsWith(name, "yakuza4")) return Game::Yakuza4;
+	if (startsWith(name, "yakuza5")) return Game::Yakuza5;
+	if (startsWith(name, "yakuza0")) return Game::Yakuza0;
+	if (name == "yakuzakiwami") return Game::YakuzaKiwami;
+	if (startsWith(name, "yakuza6")) return Game::Yakuza6;
+	if (startsWith(name, "yakuzakiwami2")) return Game::YakuzaKiwami2;
+	if (name == "yakuzalikeadragon") return Game::YakuzaLikeADragon;
 	if (name == "eve") return Game::VFeSports;
-	if (name == "Judgment") return Game::Judgment;
-	if (name == "LostJudgment") return Game::LostJudgment;
-	if (name == "LikeaDragonGaiden") return Game::LikeADragonGaidenTheManWhoErasedHisName;
-	if (name == "LikeADragonGaiden") return Game::LikeADragonGaidenTheManWhoErasedHisName;
-	if (name == "LikeADragon8") return Game::LikeADragonInfiniteWealth;
+	if (name == "judgment") return Game::Judgment;
+	if (name == "lostjudgment") return Game::LostJudgment;
+	if (name == "likeadragongaiden") return Game::LikeADragonGaidenTheManWhoErasedHisName;
+	if (name == "likeadragon8") return Game::LikeADragonInfiniteWealth;
 
 	return Game::Unsupported;
 }

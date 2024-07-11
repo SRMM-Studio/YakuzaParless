@@ -3,6 +3,7 @@
 #include "Utils/MemoryMgr.h"
 #include "Utils/Trampoline.h"
 #include "Utils/Patterns.h"
+#include "Utils/buffer.h"
 #include <MinHook.h>
 #include <iostream>
 
@@ -14,6 +15,26 @@ ParlessGameLJ::t_orgLJAddFileEntry(*ParlessGameLJ::hookLJAddFileEntry) = NULL;
 
 ParlessGameLJ::t_orgLJGetEntityPath ParlessGameLJ::orgLJGetEntityPath = NULL;
 ParlessGameLJ::t_orgLJGetEntityPath(*ParlessGameLJ::hookLJGetEntityPath) = NULL;
+
+void write_int(uintptr_t addr, int val)
+{
+	unsigned long OldProtection;
+	VirtualProtect((LPVOID)(addr), 4, PAGE_EXECUTE_READWRITE, &OldProtection);
+
+	int* ptr = (int*)addr;
+	*ptr = val;
+
+	VirtualProtect((LPVOID)(addr), 4, OldProtection, NULL);
+}
+
+inline void write_relative_addr(void* instruction_start, intptr_t target, int instruction_length = 7)
+{
+	intptr_t instruction_end = (intptr_t)((unsigned long long)instruction_start + instruction_length);
+	unsigned int* offset = (unsigned int*)((unsigned long long)instruction_start + (instruction_length - 4));
+
+	int calcOffset = target - instruction_end;
+	write_int((intptr_t)offset, calcOffset);
+}
 
 bool ParlessGameLJ::hook_add_file()
 {
@@ -67,6 +88,17 @@ bool ParlessGameLJ::hook_add_file()
 	*((char*)org_BindCpk) = 0x48;
 
 	std::cout << "Applied CPK directory bind hook.\n";
+
+	void* addr = pattern("48 8D 35 ? ? ? ? 48 8B C6 33 FF").get_first(0);
+
+
+	void* buffer = AllocateBuffer(addr);
+	unsigned int diff = (int64_t)addr - (intptr_t)GetModuleHandle(NULL);
+
+	memcpy_s(buffer, strlen(modded_ubik_path), modded_ubik_path, strlen(modded_ubik_path));
+
+	write_relative_addr(addr, (intptr_t)buffer, 7);
+	//Memory::WriteOffsetValue(addr, modded_ubik_path);
 
 	return true;
 }

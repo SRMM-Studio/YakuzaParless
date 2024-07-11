@@ -77,6 +77,16 @@ namespace Memory
 		memcpy( std::addressof(var), &dstAddr, sizeof(dstAddr) );
 	}
 
+	inline void* ReadOffsetValue2(void* instruction_start, int instruction_length = 7)
+	{
+		void* instruction_end = (void*)((unsigned long long)instruction_start + instruction_length);
+		unsigned int* offset = (unsigned int*)((unsigned long long)instruction_start + (instruction_length - 4));
+
+		void* addr = (void*)(((unsigned long long)instruction_start + instruction_length) + *offset);
+
+		return addr;
+	}
+
 	template<typename AT, typename Func>
 	inline void		InjectHook(AT address, Func hook)
 	{

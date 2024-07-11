@@ -28,7 +28,7 @@ static HMODULE hDLLModule;
 
 namespace Parless
 {
-	const char* VERSION = "2.1.1";
+	const char* VERSION = "2.2.0";
 	
 	t_CriBind(*hook_BindCpk);
 	t_CriBind org_BindCpk = NULL;
@@ -43,6 +43,7 @@ namespace Parless
 	CBaseParlessGame* currentParlessGame;
 	Game currentGame;
 	Locale currentLocale;
+	const char* versionStr;
 
 	bool isDemo;
 
@@ -68,6 +69,7 @@ namespace Parless
 	bool loadMods;
 	bool loadParless;
 	bool rebuildMLO;
+	bool enableReload;
 
 	// Mod paths will be relative to the ASI's directory instead of the game's directory (to support undumped UWP games)
 	bool isUwp;
@@ -319,9 +321,6 @@ namespace Parless
 				string dataPath_lowercase = dataPath;
 				std::for_each(dataPath_lowercase.begin(), dataPath_lowercase.end(), [](char& w) { w = std::tolower(w); });
 
-				for (auto i : cpkModMap)
-					cout << i.first << " \t\t\t " << endl;
-
 				auto match = cpkModMap.find(dataPath_lowercase);
 				if (match != cpkModMap.end())
 				{
@@ -402,7 +401,7 @@ void RebuildMLO()
 	}
 	else
 	{
-		std::cout << " Failed to start the process!";
+		std::cout << " Failed to start the process! Error Code: " << GetLastError();
 	}
 }
 
@@ -651,6 +650,32 @@ void Reload()
 	cout << endl;
 }
 
+
+bool is_key_down(int key)
+{
+	return GetAsyncKeyState(key) == -32767;
+}
+
+bool is_key_held(int key)
+{
+	return (GetAsyncKeyState(key) & 0x8000) == 0x8000;
+}
+
+void input_thread() {
+
+	while (true)
+	{
+		if (is_key_held(VK_LMENU))
+			if (is_key_held(VK_LCONTROL))
+				if (is_key_down(0x52))
+				{
+					std::cout << "Reloading...\n";
+					Reload();
+					std::cout << "Reloaded\n";
+				}
+	}
+}
+
 void OnInitializeHook()
 {
 	std::unique_ptr<ScopedUnprotect::Unprotect> Protect = ScopedUnprotect::UnprotectSectionOrFullModule(GetModuleHandle(nullptr), ".text");
@@ -695,6 +720,7 @@ void OnInitializeHook()
 	loadParless = GetPrivateProfileIntW(L"Overrides", L"LooseFilesEnabled ", 1, wcModulePath);
 	loadMods = GetPrivateProfileIntW(L"Overrides", L"ModsEnabled", 1, wcModulePath);
 	rebuildMLO = GetPrivateProfileIntW(L"Overrides", L"RebuildMLO", 0, wcModulePath);
+	enableReload = GetPrivateProfileIntW(L"Debug", L"EnableReload", 0, wcModulePath);
 
 	int localeValue = GetPrivateProfileIntW(L"Overrides", L"Locale", 0, wcModulePath);
 
@@ -741,11 +767,13 @@ void OnInitializeHook()
 	cout << "Game Name: " << currentGameName << endl;
 
 	if (Parless::isXbox)
-		cout << "Gamepass/Xbox Edition" << endl;
+		versionStr = "Gamepass/Xbox";
 	else if (Parless::isGOG)
-		cout << "GOG Edition" << endl;
+		versionStr = "GOG";
 	else
-		cout << "Steam Edition" << endl;
+		versionStr = "Steam";
+
+	cout << versionStr << endl;
 
 	currentGame = getGame(currentGameName);
 	currentParlessGame = get_parless_game(currentGame);
@@ -823,8 +851,24 @@ void OnInitializeHook()
 			return;
 		}
 		
+		//UBIK time
+		if (currentGame >= Game::LostJudgment)
+		{
+			CBaseParlessGameDE* deGame = (CBaseParlessGameDE*)currentParlessGame;
+
+			if (std::filesystem::is_directory("mods/Parless/ubik"))
+			{
+				deGame->redirectUbik = true;
+				std::cout << "Redirect Ubik\n";
+			}
+		}
+
 		if (!currentParlessGame->hook_add_file())
 		{
+			std::wstringstream stream;
+			stream << L"Hooking failed. YakuzaParless/SRMM will not work.\nDetected Version: " << versionStr << "\nEXE Name: " << basenameBackslashNoExt(string(wstr.begin(), wstr.end())).c_str();
+
+			MessageBox(nullptr, stream.str().c_str(), L"YakuzaParless Error", 0);
 			cout << "Hooking failed. Aborting.\n";
 			return;
 		}
@@ -846,9 +890,17 @@ void OnInitializeHook()
 			break;
 		}
 		}
+
 	}
 
 	modsLoaded = true;
+
+	if (Parless::enableReload)
+	{
+		std::thread thread(input_thread);
+		thread.detach();
+		std::cout << "Reload ENABLED\n";
+	}
 
 	cout << "Hook function finished.\n";
 }
