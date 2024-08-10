@@ -89,16 +89,18 @@ bool ParlessGameLJ::hook_add_file()
 
 	std::cout << "Applied CPK directory bind hook.\n";
 
-	void* addr = pattern("48 8D 35 ? ? ? ? 48 8B C6 33 FF").get_first(0);
+	if (redirectUbik)
+	{
+		void* addr = pattern("48 8D 35 ? ? ? ? 48 8B C6 33 FF").get_first(0);
 
+		void* buffer = AllocateBuffer(addr);
+		unsigned int diff = (int64_t)addr - (intptr_t)GetModuleHandle(NULL);
 
-	void* buffer = AllocateBuffer(addr);
-	unsigned int diff = (int64_t)addr - (intptr_t)GetModuleHandle(NULL);
+		memcpy_s(buffer, strlen(modded_ubik_path), modded_ubik_path, strlen(modded_ubik_path));
 
-	memcpy_s(buffer, strlen(modded_ubik_path), modded_ubik_path, strlen(modded_ubik_path));
-
-	write_relative_addr(addr, (intptr_t)buffer, 7);
-	//Memory::WriteOffsetValue(addr, modded_ubik_path);
+		write_relative_addr(addr, (intptr_t)buffer, 7);
+		//Memory::WriteOffsetValue(addr, modded_ubik_path);
+	}
 
 	return true;
 }

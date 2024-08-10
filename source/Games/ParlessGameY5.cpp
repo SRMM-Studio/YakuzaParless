@@ -30,13 +30,13 @@ bool ParlessGameY5::hook_add_file()
 
     if (MH_CreateHook(hook_BindCpk, &BindCpk, reinterpret_cast<LPVOID*>(&org_BindCpk)) != MH_OK)
     {
-        cout << "Hook creation failed. Aborting.\n";
+        cout << "BindCPK Hook creation failed. Aborting.\n";
         return false;
     }
 
     if (MH_EnableHook(hook_BindCpk) != MH_OK)
     {
-        cout << "Hook could not be enabled. Aborting.\n";
+        cout << "BindCPK Hook could not be enabled. Aborting.\n";
         return false;
     }
 
@@ -46,13 +46,15 @@ bool ParlessGameY5::hook_add_file()
 
     if (MH_CreateHook(hook_Y5AddStreamFile, &ParlessGameY5::Y5AddStreamFile, reinterpret_cast<LPVOID*>(&org_Y5AddStreamFile)) != MH_OK)
     {
+        cout << "Y5AddStreamFile Hook could not be enabled. Aborting.\n";
         return false;
     }
 
     if (MH_EnableHook(hook_Y5AddStreamFile) != MH_OK)
     {
-        cout << "Hook could not be enabled. Aborting.\n";
+        cout << "Y5AddStreamFile could not be enabled. Aborting.\n";
         return false;
     }
 
+    return true;
 }
