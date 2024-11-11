@@ -42,7 +42,7 @@ Game getGame(string name)
 	if (name == "yakuzakiwami") return Game::YakuzaKiwami;
 	if (startsWith(name, "yakuza6")) return Game::Yakuza6;
 	if (startsWith(name, "yakuzakiwami2")) return Game::YakuzaKiwami2;
-	if (name == "yakuzalikeadragon") return Game::YakuzaLikeADragon;
+	if (startsWith(name, "yakuzalikeadragon")) return Game::YakuzaLikeADragon;
 	if (name == "eve") return Game::VFeSports;
 	if (name == "judgment") return Game::Judgment;
 	if (name == "lostjudgment") return Game::LostJudgment;

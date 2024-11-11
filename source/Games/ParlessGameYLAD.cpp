@@ -67,16 +67,23 @@ bool ParlessGameYLAD::hook_add_file()
 	if (MH_EnableHook(hookYLaDFilepath) != MH_OK)
 		return false;
 
-	if(!isXbox)
-		hookYLADGetEntityPath = (t_orgYLADGetEntityPath*)pattern("48 89 5C 24 08 48 89 74 24 10 57 48 83 EC ? 0F B7 FA 48 8B F1").get_first(0);
+	if (!isXbox)
+	{
+		auto pat = pattern("48 89 5C 24 08 48 89 74 24 10 57 48 83 EC ? 0F B7 FA 48 8B F1");
+
+		if (pat.size() > 0)
+		{
+			hookYLADGetEntityPath = (ParlessGameYLAD::t_orgYLADGetEntityPath*)pat.get(0).get<void>(0);
+
+			if (MH_CreateHook(hookYLADGetEntityPath, &YLaDGetEntityPath, reinterpret_cast<LPVOID*>(&orgYLADGetEntityPath)) != MH_OK)
+			{
+				std::cout << "Hook creation failed. Aborting.\n";
+				return false;
+			}
+		}
+	}
 	else
 		hookYLADGetEntityPath = (t_orgYLADGetEntityPath*)pattern("0F B7 FA 48 8B F1 45 85 C0 75 09 48 8D").get_first(-15);
-
-	if (MH_CreateHook(hookYLADGetEntityPath, &YLaDGetEntityPath, reinterpret_cast<LPVOID*>(&orgYLADGetEntityPath)) != MH_OK)
-	{
-		std::cout << "Hook creation failed. Aborting.\n";
-		return false;
-	}
 
 	if (MH_EnableHook(hookYLADGetEntityPath) != MH_OK)
 	{

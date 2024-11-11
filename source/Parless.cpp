@@ -28,7 +28,7 @@ static HMODULE hDLLModule;
 
 namespace Parless
 {
-	const char* VERSION = "2.2.1";
+	const char* VERSION = "2.2.2";
 	
 	t_CriBind(*hook_BindCpk);
 	t_CriBind org_BindCpk = NULL;
@@ -959,4 +959,10 @@ extern "C"
 
 		return it->first.c_str();
 	}
+	__declspec(dllexport) const char* YP_GET_FILE_PATH(char* file)
+	{
+		Parless::RenameFilePaths(file);
+		return file;
+	}
+
 }
