@@ -12,6 +12,7 @@
 #include "Games/ParlessGameLJ.h"
 #include "Games/ParlessGameTMWEHI.h"
 #include "Games/ParlessGameIW.h"
+#include "Games/ParlessGameVF5REVO.h"
 
 CBaseParlessGame* get_parless_game(Game game)
 {
@@ -76,5 +77,10 @@ CBaseParlessGame* get_parless_game(Game game)
 	{
 		return new ParlessGameIW();
 	};
+
+	case Game::VF5Revo:
+	{
+		return new ParlessGameVF5REVO();
+	}
 	}
 }

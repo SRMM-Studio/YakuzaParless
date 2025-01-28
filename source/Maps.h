@@ -28,7 +28,10 @@ enum class Game
 	VFeSports,
 	LikeADragonGaidenTheManWhoErasedHisName,
 	LikeADragonInfiniteWealthDemo,
-	LikeADragonInfiniteWealth
+	LikeADragonInfiniteWealth,
+	LikeADragonPiratesInHawaii,
+	VF5Revo,
+	Century
 };
 
 Game getGame(string name)
@@ -48,6 +51,7 @@ Game getGame(string name)
 	if (name == "lostjudgment") return Game::LostJudgment;
 	if (name == "likeadragongaiden") return Game::LikeADragonGaidenTheManWhoErasedHisName;
 	if (name == "likeadragon8") return Game::LikeADragonInfiniteWealth;
+	if (name == "vfrevobeta") return Game::VF5Revo;
 
 	return Game::Unsupported;
 }
