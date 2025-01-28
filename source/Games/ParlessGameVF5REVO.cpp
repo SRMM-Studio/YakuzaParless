@@ -95,12 +95,27 @@ bool ParlessGameVF5REVO::hook_add_file()
 {
 	void* renameFilePathsFunc;
 
-	renameFilePathsFunc = get_pattern("40 BA 10 04 00 00 E8", 6);
+	renameFilePathsFunc = get_pattern("48 8B C4 4C 89 48 20 89 50 10 55 53 56 57 41 54 41 55 41 56 41 57 48 8D A8 68 FE FF FF", 0);
 
-	Trampoline* trampoline = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
+	Sleep(5000);
 
-	ReadCall(renameFilePathsFunc, orgVF5REVOAddFileEntry);
-	InjectHook(renameFilePathsFunc, trampoline->Jump(VF5REVOAddFileEntry));
+	//Trampoline* trampoline = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
+
+	//ReadCall(renameFilePathsFunc, orgVF5REVOAddFileEntry);
+	//InjectHook(renameFilePathsFunc, trampoline->Jump(VF5REVOAddFileEntry));
+
+
+	if (MH_CreateHook(renameFilePathsFunc, &VF5REVOAddFileEntry, reinterpret_cast<LPVOID*>(&orgVF5REVOAddFileEntry)) != MH_OK)
+	{
+		cout << "Hook creation failed. Aborting.\n";
+		return false;
+	}
+
+	if (MH_EnableHook(renameFilePathsFunc) != MH_OK)
+	{
+		cout << "Hook could not be enabled. Aborting.\n";
+		return false;
+	}
 
 	std::thread thread(vf5fs_initialization_wait);
 	thread.detach();

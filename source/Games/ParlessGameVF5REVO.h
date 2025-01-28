@@ -31,7 +31,7 @@ class ParlessGameVF5REVO : public CBaseParlessGameDE
 	virtual bool hook_add_file() override;
 
 private:
-	typedef char* (*t_orgVF5REVOAddFileEntry)(char* a1, uint64_t a2, char* a3, char* a4);
+	typedef char* (*t_orgVF5REVOAddFileEntry)(short* a1, int a2, char* a3, char** a4);
 	static t_orgVF5REVOAddFileEntry orgVF5REVOAddFileEntry;
 	static t_orgVF5REVOAddFileEntry(*hookVF5REVOAddFileEntry);
 
@@ -40,11 +40,11 @@ public:
 	static t_orgVF5REVOROMLoadFile orgVF5REVOROMAddFileEntry;
 	static t_orgVF5REVOROMLoadFile(*hookVF5REVOROMAddFileEntry);
 
-	static char* VF5REVOAddFileEntry(char* a1, uint64_t a2, char* a3, char* a4)
+	static int VF5REVOAddFileEntry(short* a1, int a2, char* a3, char** a4)
 	{
-		char* result = orgVF5REVOAddFileEntry(a1, a2, a3, a4);
-		RenameFilePaths(a1);
-		return result;
+		orgVF5REVOAddFileEntry(a1, a2, a3, a4);
+		RenameFilePaths((char*)a1);
+		return strlen((char*)a1);
 	}
 	
 	static bool RenameROMFilePath(void* a1, char* fpath, int a3);
