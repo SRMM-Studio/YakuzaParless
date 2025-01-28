@@ -1,5 +1,7 @@
 #include "CBaseParlessGameDE.h"
-#include <iostream>
+#include <algorithm>
+#include <string>
+#include <filesystem>
 
 class ParlessGameVF5REVO : public CBaseParlessGameDE
 {
@@ -33,9 +35,10 @@ private:
 	static t_orgVF5REVOAddFileEntry orgVF5REVOAddFileEntry;
 	static t_orgVF5REVOAddFileEntry(*hookVF5REVOAddFileEntry);
 
-	typedef void (*t_orgVF5REVOFilepath)(char* a1, uint64_t a2, char* a3, uint64_t a4);
-	static t_orgVF5REVOFilepath orgVF5REVOFilepath;
-	static t_orgVF5REVOFilepath(*hookVF5REVOFilepath);
+public:
+	typedef __int64 (*t_orgVF5REVOROMLoadFile)(void* a1, char* path, int a3);
+	static t_orgVF5REVOROMLoadFile orgVF5REVOROMAddFileEntry;
+	static t_orgVF5REVOROMLoadFile(*hookVF5REVOROMAddFileEntry);
 
 	static char* VF5REVOAddFileEntry(char* a1, uint64_t a2, char* a3, char* a4)
 	{
@@ -43,10 +46,31 @@ private:
 		RenameFilePaths(a1);
 		return result;
 	}
+	
+	static bool RenameROMFilePath(void* a1, char* fpath, int a3);
 
-	static void VF5REVOFilepath(char* a1, uint64_t a2, char* a3, uint64_t a4)
+	static __int64 VF5RevoROMAddFileEntry(void* a1, char* path, int a3)
 	{
-		RenameFilePaths(a3);
-		orgVF5REVOFilepath(a1, a2, a3, a4);
+		char* buf = (char*)malloc(260);
+		strcpy_s(buf, 260, path);
+
+		bool success = RenameROMFilePath(a1, buf, a3);
+
+		std::string str;
+
+		__int64 result;
+
+		str = std::string(buf);
+
+		if (CBaseParlessGame::instance->logAll)
+		{
+			std::lock_guard<loggingStream> g_(*CBaseParlessGame::instance->allFilepaths);
+			(**CBaseParlessGame::instance->allFilepaths) << str << std::endl;
+		}
+
+		result = orgVF5REVOROMAddFileEntry(a1, buf, a3);
+		free(buf);
+
+		return result;
 	}
 };

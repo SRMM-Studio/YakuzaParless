@@ -51,7 +51,7 @@ Game getGame(string name)
 	if (name == "lostjudgment") return Game::LostJudgment;
 	if (name == "likeadragongaiden") return Game::LikeADragonGaidenTheManWhoErasedHisName;
 	if (name == "likeadragon8") return Game::LikeADragonInfiniteWealth;
-	if (name == "vfrevobeta") return Game::VF5Revo;
+	if (name == "vfrevobeta" || "vfrevo") return Game::VF5Revo;
 
 	return Game::Unsupported;
 }

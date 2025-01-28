@@ -3,6 +3,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <iostream>
+#include <fstream>
+#include <mutex>
 
 typedef std::unordered_set<std::string> parless_stringset;
 typedef std::unordered_map<std::string, std::string> parless_stringmap;
@@ -19,15 +21,50 @@ typedef bool (*t_parlessRename)(char* a1);
 typedef int (*t_CriBind)(void* param_1, void* param_2, const char* path, void* param_4, int param_5, void* bindId, int param_7);
 typedef void (*t_CriBindPath)(void* param_1, void* param_2, const char* filepath, int param_7);
 
+class loggingStream {
+	std::mutex m;
+	std::ofstream o;
+public:
+	explicit loggingStream() {};
+	_Acquires_lock_(this->m) void lock() {
+		this->m.lock();
+	}
+
+	_Releases_lock_(this->m) void unlock() {
+		this->m.unlock();
+	}
+
+	std::ofstream& operator*() {
+		return this->o;
+	}
+
+};
+
+
 
 class CBaseParlessGame
 {
 public:
+	static CBaseParlessGame* instance;
+
 	Locale locale;
 
 	bool isXbox;
 	bool isUwp;
 	bool isGOG;
+
+	bool logMods;
+	bool logParless;
+	bool logAll;
+	bool ignoreNonPaths;
+
+	std::string asiPath;
+
+	loggingStream* modOverrides;
+	loggingStream* parlessOverrides;
+	loggingStream* allFilepaths;
+
+	parless_stringmap fileModMap;
 
 	virtual std::string get_name();
 	virtual bool can_rebuild_mlo();

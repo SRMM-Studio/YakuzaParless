@@ -6,6 +6,7 @@ t_CriBindPath CBaseParlessGame::parless_cpk_bind_path_func = NULL;
 t_CriBind CBaseParlessGame::org_BindCpk = NULL;
 t_CriBind CBaseParlessGame::org_BindDir = NULL;
 t_CriBind(*CBaseParlessGame::hook_BindCpk) = NULL;
+CBaseParlessGame* CBaseParlessGame::instance = NULL;
 
 void CBaseParlessGame::init()
 {
