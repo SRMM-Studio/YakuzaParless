@@ -28,7 +28,7 @@ static HMODULE hDLLModule;
 
 namespace Parless
 {
-	const char* VERSION = "2.2.4";
+	const char* VERSION = "2.2.5";
 	
 	t_CriBind(*hook_BindCpk);
 	t_CriBind org_BindCpk = NULL;

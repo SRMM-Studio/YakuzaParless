@@ -12,6 +12,7 @@ using namespace Memory;
 ParlessGameVF5REVO::t_orgVF5REVOAddFileEntry ParlessGameVF5REVO::orgVF5REVOAddFileEntry = NULL;
 ParlessGameVF5REVO::t_orgVF5REVOAddFileEntry* ParlessGameVF5REVO::hookVF5REVOAddFileEntry = NULL;
 ParlessGameVF5REVO::t_orgVF5REVOROMLoadFile ParlessGameVF5REVO::orgVF5REVOROMAddFileEntry = NULL;
+ParlessGameVF5REVO::t_orgVF5REVOROMLoadStreamFile ParlessGameVF5REVO::orgVF5REVOROMLoadStreamFile = NULL;
 
 inline std::uint8_t* PatternScan(void* module, const char* signature)
 {
@@ -73,8 +74,7 @@ bool vf5fs_initialization_wait()
 	std::cout << "VF5FS Module loaded, hooking..." << std::endl;
 
 	void* fileLoadAddr = PatternScan(moduleAddr, "48 83 EC ? 45 8B C8 C6 44 24 28 ?");
-    void* org;
-
+	void* musicPlayFunc = PatternScan(moduleAddr, "48 89 5C 24 10 48 89 6C 24 18 48 89 74 24 20 41 56 48 83 EC ? 45 33 F6");
 
     if (MH_CreateHook(fileLoadAddr, &ParlessGameVF5REVO::VF5RevoROMAddFileEntry, reinterpret_cast<LPVOID*>(&ParlessGameVF5REVO::orgVF5REVOROMAddFileEntry)) != MH_OK)
     {
@@ -88,12 +88,27 @@ bool vf5fs_initialization_wait()
         return false;
     }
 
-    std::cout << "Initialized ROM file direction hooks.\n";
+    std::cout << "Initialized ROM file direction hook.\n";
+
+	if (MH_CreateHook(musicPlayFunc, &ParlessGameVF5REVO::VF5RevoROMLoadStreamFile, reinterpret_cast<LPVOID*>(&ParlessGameVF5REVO::orgVF5REVOROMLoadStreamFile)) != MH_OK)
+	{
+		std::cout << "Music hook creation failed. Aborting.\n";
+		return false;
+	}
+
+	if (MH_EnableHook(musicPlayFunc) != MH_OK)
+	{
+		std::cout << "Music hook could not be enabled. Aborting.\n";
+		return false;
+	}
+
+	std::cout << "Initialized ROM stream file direction hook.\n";
 }
 
 bool ParlessGameVF5REVO::hook_add_file()
 {
 	void* renameFilePathsFunc;
+	void* musicPlayFunc;
 
 	renameFilePathsFunc = get_pattern("48 8B C4 4C 89 48 20 89 50 10 55 53 56 57 41 54 41 55 41 56 41 57 48 8D A8 68 FE FF FF", 0);
 
@@ -116,6 +131,7 @@ bool ParlessGameVF5REVO::hook_add_file()
 		cout << "Hook could not be enabled. Aborting.\n";
 		return false;
 	}
+
 
 	std::thread thread(vf5fs_initialization_wait);
 	thread.detach();

@@ -40,6 +40,9 @@ public:
 	static t_orgVF5REVOROMLoadFile orgVF5REVOROMAddFileEntry;
 	static t_orgVF5REVOROMLoadFile(*hookVF5REVOROMAddFileEntry);
 
+	typedef __int64 (*t_orgVF5REVOROMLoadStreamFile)(void* a1, char* path, int a3);
+	static t_orgVF5REVOROMLoadStreamFile orgVF5REVOROMLoadStreamFile;
+
 	static int VF5REVOAddFileEntry(short* a1, int a2, char* a3, char** a4)
 	{
 		orgVF5REVOAddFileEntry(a1, a2, a3, a4);
@@ -69,6 +72,31 @@ public:
 		}
 
 		result = orgVF5REVOROMAddFileEntry(a1, buf, a3);
+		free(buf);
+
+		return result;
+	}
+
+	static __int64 VF5RevoROMLoadStreamFile(void* a1, char* path, int a3)
+	{
+		char* buf = (char*)malloc(260);
+		strcpy_s(buf, 260, path);
+
+		bool success = RenameROMFilePath(a1, buf, a3);
+
+		std::string str;
+
+		__int64 result;
+
+		str = std::string(buf);
+
+		if (CBaseParlessGame::instance->logAll)
+		{
+			std::lock_guard<loggingStream> g_(*CBaseParlessGame::instance->allFilepaths);
+			(**CBaseParlessGame::instance->allFilepaths) << str << std::endl;
+		}
+
+		result = orgVF5REVOROMLoadStreamFile(a1, buf, a3);
 		free(buf);
 
 		return result;
