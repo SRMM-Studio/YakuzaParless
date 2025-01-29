@@ -28,7 +28,7 @@ static HMODULE hDLLModule;
 
 namespace Parless
 {
-	const char* VERSION = "2.2.5";
+	const char* VERSION = "2.2.6";
 	
 	t_CriBind(*hook_BindCpk);
 	t_CriBind org_BindCpk = NULL;
@@ -69,6 +69,7 @@ namespace Parless
 	bool loadParless;
 	bool rebuildMLO;
 	bool enableReload;
+	bool v5fsArcade;
 
 	// Mod paths will be relative to the ASI's directory instead of the game's directory (to support undumped UWP games)
 	bool isUwp;
@@ -700,7 +701,8 @@ void OnInitializeHook()
 	loadParless = GetPrivateProfileIntW(L"Overrides", L"LooseFilesEnabled ", 1, wcModulePath);
 	loadMods = GetPrivateProfileIntW(L"Overrides", L"ModsEnabled", 1, wcModulePath);
 	rebuildMLO = GetPrivateProfileIntW(L"Overrides", L"RebuildMLO", 0, wcModulePath);
-	enableReload = GetPrivateProfileIntW(L"Debug", L"EnableReload", 0, wcModulePath);
+	enableReload = GetPrivateProfileIntW(L"Debug", L"ReloadingEnabled", 0, wcModulePath);
+	v5fsArcade = GetPrivateProfileIntW(L"Debug", L"V5FSArcadeSupport", 0, wcModulePath);
 
 	int localeValue = GetPrivateProfileIntW(L"Overrides", L"Locale", 0, wcModulePath);
 
@@ -837,6 +839,17 @@ void OnInitializeHook()
 		{
 			cout << "Minhook initialization failed. Aborting.\n";
 			return;
+		}
+
+		//V5FS
+		if (currentGame >= Game::Yakuza6)
+		{
+			CBaseParlessGameDE* deGame = (CBaseParlessGameDE*)currentParlessGame;
+
+			if (deGame->enable_vf5fs_support(v5fsArcade))
+			{
+				deGame->v5fs_procedure();
+			}
 		}
 		
 		//UBIK time
