@@ -51,7 +51,8 @@ Game getGame(string name)
 	if (name == "lostjudgment") return Game::LostJudgment;
 	if (name == "likeadragongaiden") return Game::LikeADragonGaidenTheManWhoErasedHisName;
 	if (name == "likeadragon8") return Game::LikeADragonInfiniteWealth;
-	if (name == "vfrevobeta" || "vfrevo") return Game::VF5Revo;
+	if (name == "vfrevobeta" || name == "vfrevo") return Game::VF5Revo;
+	if (name == "likeadragonpirates") return Game::LikeADragonPiratesInHawaii;
 
 	return Game::Unsupported;
 }
@@ -88,6 +89,8 @@ const char* getGameName(Game game)
 			return "Like a Dragon: Infinite Wealth";
 		case Game::LikeADragonInfiniteWealth:
 			return "Like a Dragon: Infinite Wealth";
+		case Game::LikeADragonPiratesInHawaii:
+			return "Like a Dragon: Pirate Yakuza in Hawaii";
 		case Game::Unsupported:
 		default:
 			return "Unsupported";

@@ -28,7 +28,7 @@ static HMODULE hDLLModule;
 
 namespace Parless
 {
-	const char* VERSION = "2.2.6";
+	const char* VERSION = "2.2.8";
 	
 	t_CriBind(*hook_BindCpk);
 	t_CriBind org_BindCpk = NULL;
@@ -102,6 +102,15 @@ namespace Parless
 
 		char* datapath;
 		string path(filepath);
+
+		//14.02.2025
+		//Replace double forward slashes if it exists
+		//Encountered this behavior for first time in pirate game
+		//Broke chara texture replacing
+		size_t pos = path.find("//");
+
+		if (pos != std::string::npos)
+			path.replace(pos, 2, "/");
 
 		size_t indexOfData = firstIndexOf(path, "data/");
 
@@ -300,7 +309,6 @@ namespace Parless
 				string dataPath = path.substr(indexOfData + 4);
 				string dataPath_lowercase = dataPath;
 				std::for_each(dataPath_lowercase.begin(), dataPath_lowercase.end(), [](char& w) { w = std::tolower(w); });
-
 				auto match = cpkModMap.find(dataPath_lowercase);
 				if (match != cpkModMap.end())
 				{
