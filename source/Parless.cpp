@@ -21,6 +21,7 @@
 #include <ShellAPI.h>
 #include <mutex>
 #include <thread>
+#include <regex>
 
 #include "ParlessGames.h"
 
@@ -28,7 +29,7 @@ static HMODULE hDLLModule;
 
 namespace Parless
 {
-	const char* VERSION = "2.2.8";
+	const char* VERSION = "2.3.0";
 	
 	t_CriBind(*hook_BindCpk);
 	t_CriBind org_BindCpk = NULL;
@@ -107,10 +108,12 @@ namespace Parless
 		//Replace double forward slashes if it exists
 		//Encountered this behavior for first time in pirate game
 		//Broke chara texture replacing
-		size_t pos = path.find("//");
 
-		if (pos != std::string::npos)
-			path.replace(pos, 2, "/");
+		size_t doublePath = firstIndexOf(path, "//");
+		if (doublePath > -1) 
+		{
+			path = std::regex_replace(path, std::regex("//"), "/");
+		}
 
 		size_t indexOfData = firstIndexOf(path, "data/");
 
@@ -523,10 +526,72 @@ void ReadModLoadOrder()
 	}
 }
 
-void InitializeScripts()
+void LoadASI(std::string path) 
 {
 	typedef int(__stdcall* asi_init)();
 
+	HINSTANCE asiScript = LoadLibraryA(path.c_str());
+
+	if (asiScript)
+	{
+		asi_init asiInitFunc = (asi_init)GetProcAddress(asiScript, "InitializeASI");
+
+		if (asiInitFunc)
+			asiInitFunc();
+	}
+	else
+	{
+		int errCode = GetLastError();
+		cout << "Script LoadLibrary fail: " << path.c_str() << " Error Code: " << errCode << endl;
+
+		string errorMsg;
+
+		switch (errCode)
+		{
+		default:
+		{
+			errorMsg += string("Failed to load ASI script ");
+			errorMsg += path;
+			errorMsg += string(" Error Code ");
+			errorMsg += std::to_string(errCode);
+			break;
+		};
+
+		case 225:
+		{
+			errorMsg += "Failed to load ASI script because it was marked as a virus.\nMost likely a false positive! Try unblocking and trying again.";
+			break;
+		};
+		}
+
+
+		MessageBoxA(0, errorMsg.c_str(), "ASI Error", 0);
+	}
+}
+
+void InitializeLibraries() 
+{
+	if (std::filesystem::is_directory("srmm-libs"))
+	{
+		for (std::filesystem::recursive_directory_iterator i("srmm-libs"), end; i != end; ++i)
+			if (!std::filesystem::is_directory(i->path()))
+				if (std::string(i->path().filename().string()).ends_with(".asi"))
+				{
+					bool disableFileExists = std::filesystem::exists(i->path().filename().root_directory().string() + ".disabled");
+
+					if (disableFileExists)
+						continue;
+
+					std::string path = i->path().string();
+
+					std::cout << "Initializing library script " << i->path().filename() << std::endl;
+					LoadASI(path);
+				}
+	}
+}
+
+void InitializeScripts()
+{
 	//Iterate the filemap for any ASI scripts. Then load them
 	for (auto it = Parless::currentParlessGame->fileModMap.begin(); it != Parless::currentParlessGame->fileModMap.end(); it++) {
 
@@ -539,43 +604,7 @@ void InitializeScripts()
 			initStr += "Initializing script file " + path;
 			cout << initStr << std::endl;
 
-			HINSTANCE asiScript = LoadLibraryA(path.c_str());
-
-			if (asiScript)
-			{
-				asi_init asiInitFunc = (asi_init)GetProcAddress(asiScript, "InitializeASI");
-
-				if (asiInitFunc)
-					asiInitFunc();
-			}
-			else
-			{
-				int errCode = GetLastError();
-				cout << "Script LoadLibrary fail: " << path.c_str() << " Error Code: " << errCode << endl;
-
-				string errorMsg;
-
-				switch (errCode)
-				{
-				default:
-				{
-					errorMsg += string("Failed to load ASI script ");
-					errorMsg += path;
-					errorMsg += string(" Error Code ");
-					errorMsg += std::to_string(errCode);
-					break;
-				};
-
-				case 225:
-				{
-					errorMsg += "Failed to load ASI script because it was marked as a virus.\nMost likely a false positive! Try unblocking and trying again.";
-					break;
-				};
-				}
-
-
-				MessageBoxA(0, errorMsg.c_str(), "ASI Error", 0);
-			}
+			LoadASI(path);
 		}
 	}
 }
@@ -739,7 +768,6 @@ void OnInitializeHook()
 	if (startsWith(currentGameName, "ShinRyu"))
 		return;
 
-
 	if (GetPrivateProfileIntW(L"Debug", L"ConsoleEnabled", 0, wcModulePath))
 	{
 		// Open debugging console
@@ -801,6 +829,10 @@ void OnInitializeHook()
 	Reload();
 
 	//Initialize Extensions/Script Mods
+	cout << "Initializing mod libraries... ";
+	InitializeLibraries();
+	cout << "DONE\n";
+
 	cout << "Initializing mod scripts... ";
 	InitializeScripts();
 	cout << "DONE!\n";
