@@ -29,17 +29,12 @@ static HMODULE hDLLModule;
 
 namespace Parless
 {
-	const char* VERSION = "2.3.0";
+	const char* VERSION = "2.3.1";
 	
 	t_CriBind(*hook_BindCpk);
 	t_CriBind org_BindCpk = NULL;
 	t_CriBind org_BindDir = NULL;
 	BYTE* (*orgVFeSAddFileEntry)(BYTE* a1, int a2);
-
-	//t_CriBind(*hookJE_BindCpk) = (t_Bind*)0x141855794;
-	//t_CriBind orgJE_BindDir = (t_Bind)0x141852f3c;
-
-	typedef bool (*t_DEIsDemo)();
 
 	CBaseParlessGame* currentParlessGame;
 	Game currentGame;
@@ -110,7 +105,7 @@ namespace Parless
 		//Broke chara texture replacing
 
 		size_t doublePath = firstIndexOf(path, "//");
-		if (doublePath > -1) 
+		if (doublePath != 18446744073709551615)
 		{
 			path = std::regex_replace(path, std::regex("//"), "/");
 		}
@@ -710,6 +705,23 @@ void OnInitializeHook()
 	const char* AWB_LOAD_MSG = "Applied AWB loading hook.\n";
 	const char* PATH_EXT_MSG = "Applied file path extension hook.\n";
 
+	// Get the name of the current game
+	wchar_t exePath[MAX_PATH + 1];
+	GetModuleFileNameW(NULL, exePath, MAX_PATH);
+
+	wstring wstr(exePath);
+	string currentGameName = basenameBackslashNoExt(string(wstr.begin(), wstr.end()));
+
+	if (currentGameName == "startup")
+		return;
+
+	//Important for winmm
+	if (startsWith(currentGameName, "RyuMod"))
+		return;
+
+	if (startsWith(currentGameName, "ShinRyu"))
+		return;
+
 	// Read INI variables
 
 	// Obtain a path to the ASI
@@ -749,24 +761,6 @@ void OnInitializeHook()
 	ignoreNonPaths = GetPrivateProfileIntW(L"Logs", L"IgnoreNonPaths", 1, wcModulePath);
 
 	isUwp = GetPrivateProfileIntW(L"UWP", L"UWPGame", -1, wcModulePath) != -1;
-
-
-	// Get the name of the current game
-	wchar_t exePath[MAX_PATH + 1];
-	GetModuleFileNameW(NULL, exePath, MAX_PATH);
-
-	wstring wstr(exePath);
-	string currentGameName = basenameBackslashNoExt(string(wstr.begin(), wstr.end()));
-
-	if (currentGameName == "startup")
-		return;
-
-	//Important for winmm
-	if (startsWith(currentGameName, "RyuMod"))
-		return;
-
-	if (startsWith(currentGameName, "ShinRyu"))
-		return;
 
 	if (GetPrivateProfileIntW(L"Debug", L"ConsoleEnabled", 0, wcModulePath))
 	{
