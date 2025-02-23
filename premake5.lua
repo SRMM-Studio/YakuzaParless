@@ -24,7 +24,7 @@ project "YakuzaParless"
 
 	includedirs { "source/", "source/minhook/include" }
 
-	files { "source/*.h", "source/*.cpp", "source/Games/*.h", "source/Games/*.cpp", "source/resources/*.rc" }
+	files { "source/*.h", "source/*.cpp", "source/Games/*.h", "source/Games/*.cpp", "source/Utils/*.cpp", "source/resources/*.rc" }
 
 	-- Disable exceptions in WIL
 	defines { "WIL_SUPPRESS_EXCEPTIONS" }
@@ -41,7 +41,7 @@ workspace "*"
 	configurations { "Debug", "Release", "Master" }
 	location "build"
 
-	cppdialect "C++17"
+	cppdialect "C++20"
 	staticruntime "on"
 	buildoptions { "/sdl" }
 	warnings "Extra"
