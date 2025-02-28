@@ -11,7 +11,7 @@ public:
 	parless_stringmap get_game_map(Locale locale) override
 	{
 		std::string curLoc;
-		std::vector<const char*> locInfWealthVec{ "de", "en", "es", "fr", "it", "ja", "ko", "zh", "zhs", "ru", "pt"};
+		std::vector<const char*> locInfWealthVec{ "de", "en", "es", "fr", "it", "ja", "ko", "zh", "zhs", "zht", "ru", "pt"};
 
 		parless_stringmap result = parless_stringmap();
 		result["/entity"] = "/entity_spr";

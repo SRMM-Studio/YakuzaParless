@@ -19,7 +19,8 @@ ParlessGameLADPYIH::t_orgPYIHGetEntityPath(*ParlessGameLADPYIH::hookPYIHGetEntit
 
 bool ParlessGameLADPYIH::hook_add_file()
 {
-	hookPYIHAddFileEntry = (t_orgPYIHAddFileEntry*)(t_orgPYIHAddFileEntry*)pattern("48 8B C4 4C 89 48 20 89 50 10 55").get_first(0);
+
+	hookPYIHAddFileEntry = (t_orgPYIHAddFileEntry*)(t_orgPYIHAddFileEntry*)0x1402B4560;
 
 	if (MH_CreateHook(hookPYIHAddFileEntry, &PYIHAddFileEntry, reinterpret_cast<LPVOID*>(&orgPYIHAddFileEntry)) != MH_OK)
 	{
@@ -49,9 +50,11 @@ bool ParlessGameLADPYIH::hook_add_file()
 			return false;
 		}
 	}
+	
 
 	hook_BindCpk = (t_CriBind*)pattern("48 8B C4 48 89 58 08 48 89 70 10 48 89 78 20 4C 89 40 18 55 41 54 41 55 41 56 41 57 48 8B EC").get_first(0);
 	org_BindDir = (t_CriBind)pattern("48 8B C4 48 89 58 08 48 89 68 10 48 89 70 18 48 89 78 20 41 54 41 56 41 57 48 83 EC ? 48 8B B4 24 88 00 00 00").get_first(0);
+
 
 	if (MH_CreateHook(hook_BindCpk, &BindCpk, reinterpret_cast<LPVOID*>(&org_BindCpk)) != MH_OK)
 	{
@@ -64,6 +67,7 @@ bool ParlessGameLADPYIH::hook_add_file()
 		std::cout << "Hook could not be enabled. Aborting.\n";
 		return false;
 	}
+	
 
 	if (redirectUbik)
 	{
@@ -74,6 +78,10 @@ bool ParlessGameLADPYIH::hook_add_file()
 		VirtualProtect((void*)szUbik, len, PAGE_EXECUTE_READWRITE, nullptr);
 		memcpy_s((void*)szUbik, len, (void*)modded_ubik_path, len);
 	}
+	
 
-	*((char*)orgPYIHAddFileEntry) = 0x48;
+		//*((char*)orgPYIHAddFileEntry) = 0x48;
+	
+
+	return true;
 }
