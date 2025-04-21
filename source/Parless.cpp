@@ -29,7 +29,7 @@ static HMODULE hDLLModule;
 
 namespace Parless
 {
-	const char* VERSION = "2.3.3";
+	const char* VERSION = "2.3.5";
 	
 	t_CriBind(*hook_BindCpk);
 	t_CriBind org_BindCpk = NULL;
@@ -164,11 +164,6 @@ namespace Parless
 							std::lock_guard<loggingStream> g_(modOverrides);
 							(*modOverrides) << filepath + indexOfData << std::endl;
 						}
-					}
-					else
-					{
-						if(logParless)
-							cout << "Par not found: " << override << std::endl;
 					}
 				}
 			}
@@ -523,7 +518,19 @@ void ReadModLoadOrder()
 
 void LoadASI(std::string path) 
 {
+	if (!std::filesystem::path(path).string().ends_with(".asi"))
+		return;
+
 	typedef int(__stdcall* asi_init)();
+
+	if (!std::filesystem::exists(path))
+		return;
+
+	if (GetModuleHandle(std::filesystem::path(path).stem().c_str()) != nullptr)
+	{
+		//Already loaded.
+		return;
+	}
 
 	HINSTANCE asiScript = LoadLibraryA(path.c_str());
 
@@ -554,9 +561,13 @@ void LoadASI(std::string path)
 
 		case 225:
 		{
-			errorMsg += "Failed to load ASI script because it was marked as a virus.\nMost likely a false positive! Try unblocking and trying again.";
+			errorMsg += "\nFailed to load ASI script because it was marked as a virus.\nMost likely a false positive! Try unblocking and trying again.";
 			break;
 		};
+
+		case 126:
+			errorMsg += "\nFailed to load ASI script because the script or some of its dependencies were not found.\nThis can happen when you forget to include essential files or accidentally bundle Debug versions of scripts\n";
+			break;
 		}
 
 
@@ -568,20 +579,30 @@ void InitializeLibraries()
 {
 	if (std::filesystem::is_directory("srmm-libs"))
 	{
-		for (std::filesystem::recursive_directory_iterator i("srmm-libs"), end; i != end; ++i)
-			if (!std::filesystem::is_directory(i->path()))
-				if (std::string(i->path().filename().string()).ends_with(".asi"))
+		for (std::filesystem::directory_iterator i("srmm-libs"), end; i != end; ++i)
+		{
+			bool disableFileExists = std::filesystem::exists(i->path().string() + "/.disabled");
+
+			if (disableFileExists)
+				continue;
+
+			if (!i->is_directory())
+				continue;
+
+			for (std::filesystem::recursive_directory_iterator k(i->path()), end; k != end; ++k)
+			{
+				if (!std::filesystem::is_directory(k->path()))
 				{
-					bool disableFileExists = std::filesystem::exists(i->path().filename().root_directory().string() + ".disabled");
+					if (std::string(k->path().filename().string()).ends_with(".asi"))
+					{
+						std::string path = k->path().string();
 
-					if (disableFileExists)
-						continue;
-
-					std::string path = i->path().string();
-
-					std::cout << "Initializing library script " << i->path().filename() << std::endl;
-					LoadASI(path);
+						std::cout << "Initializing library script " << k->path().filename() << std::endl;
+						LoadASI(path);
+					}
 				}
+			}
+		}
 	}
 }
 

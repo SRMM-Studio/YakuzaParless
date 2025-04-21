@@ -9,7 +9,7 @@
 using namespace hook;
 using namespace Memory;
 
-int (*ParlessGameYK2::orgYK2AddFileEntry)(int* param_1, int* param_2, char* param_3) = NULL;
+char* (*ParlessGameYK2::orgYK2AddFileEntry)(char* a1, uint64_t a2, char* a3, char* a4) = NULL;
 uint64_t(*ParlessGameYK2::orgYK2SprintfAwb)(uint64_t param_1, uint64_t param_2, uint64_t param_3, uint64_t param_4) = NULL;
 
 std::string ParlessGameYK2::translate_path(std::string path, int indexOfData)
@@ -31,101 +31,23 @@ std::string ParlessGameYK2::translate_path(std::string path, int indexOfData)
 
 bool ParlessGameYK2::hook_add_file()
 {
+
 	void* renameFilePathsFunc;
 	uint8_t STR_LEN_ADD = 0x40;
 
-	// Hook inside the method that calculates a string's length to add 0x20 bytes to the length
-// This is needed to prevent undefined behavior when the modified path is longer than the memory allocated to it
-	void* stringLenAddr = nullptr;
-	if (!isXbox)
-		stringLenAddr = get_pattern("8B C7 3B D8 77 4E", -0x1C);
-	else
-		stringLenAddr = (void*)((__int64)ReadCallFrom(get_pattern("E8 ? ? ? ? ? ? ? ? C6 47 48 ? 66 44")) + 137);
+	void* hookYK2AddFileEntry = pattern("48 8B C4 89 50 10 55 53 56 57 41 54 41 55 41 56 41 57 48 8D A8 18 FF FF FF").get_first(0);
 
-	Trampoline* trampoline = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
-
-
-	if (!isGOG)
+	if (MH_CreateHook(hookYK2AddFileEntry, &YK2AddFileEntry, reinterpret_cast<LPVOID*>(&orgYK2AddFileEntry)) != MH_OK)
 	{
-		if (!isXbox)
-		{
-			Trampoline* trampolineStringLen = Trampoline::MakeTrampoline(stringLenAddr);
-
-			const uint8_t spacePayload[] = {
-				0x48, 0x8B, 0x09, // mov rcx, qword ptr ds:[rcx]
-				0x48, 0x83, 0xC3, STR_LEN_ADD, // add rbx, 0x20
-				0x48, 0x8B, 0xC1, // mov rax, rcx
-				0x48, 0xC1, 0xE8, 0x2C, // shr rax, 0x2C
-				0xE9, 0x0, 0x0, 0x0, 0x0 // jmp stringLenAddr+0xA
-			};
-
-			std::byte* space = trampolineStringLen->RawSpace(sizeof(spacePayload));
-			memcpy(space, spacePayload, sizeof(spacePayload));
-
-			WriteOffsetValue(space + 3 + 4 + 3 + 4 + 1, reinterpret_cast<intptr_t>(stringLenAddr) + 0xA);
-
-			const uint8_t funcPayload[] = {
-				0x48, 0x8B, 0xDB, // mov rbx, rbx
-				0x90, 0x90, // nop
-				0xE9, 0x0, 0x0, 0x0, 0x0 // jmp space2
-			};
-
-			memcpy(stringLenAddr, funcPayload, sizeof(funcPayload));
-
-			InjectHook(reinterpret_cast<intptr_t>(stringLenAddr) + 5, space, PATCH_JUMP);
-			std::cout << "Applied file path extension hook.\n";
-		}
-		else
-		{
-			Trampoline* trampolineStringLen = Trampoline::MakeTrampoline(stringLenAddr);
-
-			const uint8_t spacePayload[] = {
-				0x49, 0x8B, 0x0E, // mov rcx, qword ptr ds:[r14]
-				0x48, 0x83, 0xC3, STR_LEN_ADD, // add rbx, 0x20
-				0x48, 0x8B, 0xC1, // mov rax, rcx
-				0x48, 0xC1, 0xE8, 0x2C, // shr rax, 0x2C
-				0xE9, 0x0, 0x0, 0x0, 0x0 // jmp stringLenAddr+0xA
-			};
-
-			std::byte* space = trampolineStringLen->RawSpace(sizeof(spacePayload));
-			memcpy(space, spacePayload, sizeof(spacePayload));
-
-			WriteOffsetValue(space + 3 + 4 + 3 + 4 + 1, reinterpret_cast<intptr_t>(stringLenAddr) + 0xA);
-
-			const uint8_t funcPayload[] = {
-				0x48, 0x8B, 0xDB, // mov rbx, rbx
-				0x90, 0x90, // nop
-				0xE9, 0x0, 0x0, 0x0, 0x0 // jmp space2
-			};
-
-			memcpy(stringLenAddr, funcPayload, sizeof(funcPayload));
-
-			InjectHook(reinterpret_cast<intptr_t>(stringLenAddr) + 5, space, PATCH_JUMP);
-			std::cout << "Applied file path extension hook.\n";
-		}
+		cout << "Hook creation failed. Aborting.\n";
+		return false;
 	}
 
-
-	// Hook the AddFileEntry method to get each filepath that is loaded in the game
-
-	// Unlike Y6, K2 has a good place to hook the call instead of hooking the first instruction of the function
-	renameFilePathsFunc = get_pattern("4C 8D 44 24 20 48 8B D3 48 8B CF", -5);
-	ReadCall(renameFilePathsFunc, orgYK2AddFileEntry);
-
-	InjectHook(renameFilePathsFunc, trampoline->Jump(YK2AddFileEntry));
-
-	// AWB files are not passed over to the normal file entry function
-	void* sprintfAWBs = nullptr;
-
-	if (!isXbox)
-		sprintfAWBs = get_pattern("4C 8D 4C 24 70 45 33 C0 41 8B D5 49 8B CC", -5);
-	else
-		sprintfAWBs = get_pattern("4C 8D 4C 24 60 45 33 C0 8B D6 48 8B CD E8 ? ? ? ? 48 63", -5);
-
-	ReadCall(sprintfAWBs, orgYK2SprintfAwb);
-
-	InjectHook(sprintfAWBs, trampoline->Jump(YK2SprintfAwb));
-	std::cout << "Applied AWB loading hook.\n";
+	if (MH_EnableHook(hookYK2AddFileEntry) != MH_OK)
+	{
+		cout << "Hook could not be enabled. Aborting.\n";
+		return false;
+	}
 
 	return true;
 }
