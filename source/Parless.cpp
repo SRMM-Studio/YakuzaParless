@@ -29,7 +29,7 @@ static HMODULE hDLLModule;
 
 namespace Parless
 {
-	const char* VERSION = "2.3.5";
+	const char* VERSION = "2.3.7";
 	
 	t_CriBind(*hook_BindCpk);
 	t_CriBind org_BindCpk = NULL;
@@ -40,6 +40,8 @@ namespace Parless
 	Game currentGame;
 	Locale currentLocale;
 	const char* versionStr;
+
+	std::string gameName;
 
 	bool isDemo;
 
@@ -743,6 +745,9 @@ void OnInitializeHook()
 	if (startsWith(currentGameName, "ShinRyu"))
 		return;
 
+	gameName = currentGameName;
+	std::transform(gameName.begin(), gameName.end(), gameName.begin(), ::tolower);
+
 	// Read INI variables
 
 	// Obtain a path to the ASI
@@ -826,6 +831,10 @@ void OnInitializeHook()
 	currentParlessGame->parlessOverrides = &parlessOverrides;
 	currentParlessGame->allFilepaths = &allFilepaths;
 	CBaseParlessGame::instance = currentParlessGame;
+
+
+	if (currentGame == Game::Yakuza3)
+		((ParlessGameOOE*)currentParlessGame)->isY3 = true;
 
 	currentParlessGame->init();
 
@@ -979,6 +988,22 @@ extern "C"
 	__declspec(dllexport) const char* YP_GET_VERSION()
 	{
 		return Parless::VERSION;
+	}
+
+	__declspec(dllexport) const char* YP_GET_GAME_NAME(char* file)
+	{
+		return Parless::gameName.c_str();
+	}
+
+	
+	__declspec(dllexport) bool YP_IS_GOG()
+	{
+		return Parless::isGOG;
+	}
+
+	__declspec(dllexport) bool YP_IS_XBOX()
+	{
+		return Parless::isXbox;
 	}
 
 	__declspec(dllexport) bool YP_ARE_MODS_LOADED()

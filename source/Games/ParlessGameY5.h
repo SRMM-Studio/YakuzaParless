@@ -39,6 +39,8 @@ public:
 	static t_Y5AddStreamFile hook_Y5AddStreamFile;
 	static t_Y5AddStreamFile org_Y5AddStreamFile;
 
+	static __int64 (*orgY5MotionArchiveEntry)(__int64 a1, char* filePath, int a3, int a4, int a5, char a6);
+
 	static __int64 Y5AddFileEntry(__int64 a1, __int64 filepath, __int64 a3, int a4, __int64 a5, __int64 a6, int a7, __int64 a8, int a9, char a10, int a11, char a12, int a13, char a14)
 	{
 		RenameFilePaths((char*)filepath);
@@ -50,4 +52,11 @@ public:
 		RenameFilePaths(filePath);
 		org_Y5AddStreamFile(unknown, filePath);
 	}
+
+	static __int64 Y5MotionArchiveEntry(__int64 a1, char* filePath, int a3, int a4, int a5, char a6)
+	{
+		RenameFilePaths(filePath);
+		return orgY5MotionArchiveEntry(a1, filePath, a3, a4, a5, a6);
+	}
+
 };

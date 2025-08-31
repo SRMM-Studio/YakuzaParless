@@ -1,5 +1,15 @@
 #include "CBaseParlessGameOE.h"
 #include "StringHelpers.h"
+#include "Utils/MemoryMgr.h"
+#include <iostream>
+#include <filesystem>
+
+const char* (*CBaseParlessGameOE::orgOEGetBGMName)(int id) = nullptr;
+const char* (*CBaseParlessGameOE::orgOEGetFileFullPath)(char* buf, char* directory, char* fileName) = nullptr;
+__int64 (*CBaseParlessGameOE::orgOELoadBGM)(__int64 thisObj, int* unknown, int id, float unknown2);
+__int64 (*CBaseParlessGameOE::orgOELoadStream)(__int64 thisObj, char* fullPath);
+void* CBaseParlessGameOE::cpkRedirectPatchLocation = 0;
+
 
 std::string CBaseParlessGameOE::translate_path_original(std::string path, int indexOfData)
 {
@@ -25,4 +35,41 @@ std::string CBaseParlessGameOE::translate_path_original(std::string path, int in
 	}
 
 	return path;
+}
+
+//CPK redirecting: If a loose file exists, force the function to load the file loose (old leftover behavior)
+//Otherwise its gonna load it from the CPK
+__int64 CBaseParlessGameOE::LoadBGM(__int64 thisObj, int* unknown, int id, float unknown2)
+{
+	//Is there a better way to do all this?
+	const char* name = orgOEGetBGMName(id);
+	char buffer[272];
+
+	orgOEGetFileFullPath(buffer, (char*)"data/stream/%s", (char*)name);
+	RenameFilePaths(buffer);
+
+	byte patch;
+
+	//Loose file exists, dont load from cpk
+	//We are patching a jne instruction to always jump
+	//Which means BGM check will be skipped. And file will be loaded loosely
+	//If it does not exist, we restore the original jne, checking BGM (original behavior)
+	if (!std::filesystem::exists(buffer))
+		patch = (byte)0x75;
+	else
+		patch = (byte)0xEB;
+
+	DWORD oldProtect;
+	VirtualProtect(cpkRedirectPatchLocation, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
+	memcpy(cpkRedirectPatchLocation, &patch, 1);
+	VirtualProtect(cpkRedirectPatchLocation, 1, oldProtect, &oldProtect);
+
+	return orgOELoadBGM(thisObj, unknown, id, unknown2);
+}
+
+
+__int64 CBaseParlessGameOE::LoadStreamFile(__int64 thisObj, char* fullPath)
+{
+	RenameFilePaths(fullPath);
+	return orgOELoadStream(thisObj, fullPath);
 }

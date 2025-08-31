@@ -3,6 +3,8 @@
 class ParlessGameOOE : public CBaseParlessGame
 {
 public:
+	bool isY3;
+
 	std::string get_name() override
 	{
 		return "Yakuza 3/4";
@@ -31,6 +33,7 @@ public:
 	static __int64 (*orgOOEAddFileEntry)(__int64 a1, __int64 filepath, __int64 a3, int a4, __int64 a5, __int64 a6, int a7, __int64 a8, int a9, char a10, int a11, char a12);
 	static __int64 (*orgOOEAdxEntry)(__int64 a1, __int64 a2, __int64 a3);
 	static __int64 (*orgOOEUSMEntry)(__int64 a1, const char* filepath, __int64 a3);
+	static __int64 (*orgOOEMotionArchiveEntry)(__int64 a1);
 
 	static __int64 OOEAddFileEntry(__int64 a1, __int64 filepath, __int64 a3, int a4, __int64 a5, __int64 a6, int a7, __int64 a8, int a9, char a10, int a11, char a12)
 	{
@@ -50,5 +53,13 @@ public:
 		__int64 result = orgOOEAdxEntry(filepath, a2, a3);
 		RenameFilePaths((char*)filepath);
 		return result;
+	}
+
+	static __int64 OOEMotionArchiveEntry(__int64 fileClass)
+	{
+		char* filePath = (char*)(fileClass + 24);
+		RenameFilePaths(filePath);
+
+		return orgOOEMotionArchiveEntry(fileClass);
 	}
 };

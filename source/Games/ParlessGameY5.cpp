@@ -13,6 +13,7 @@ __int64 (*ParlessGameY5::orgY5AddFileEntry)(__int64 a1, __int64 filepath, __int6
 
 char* (*ParlessGameY5::hook_Y5AddStreamFile)(__int64 unknown, char* filePath) = NULL;
 char* (*ParlessGameY5::org_Y5AddStreamFile)(__int64 unknown, char* filePath) = NULL;
+__int64 (*ParlessGameY5::orgY5MotionArchiveEntry)(_int64 a1, char* filePath, int a3, int a4, int a5, char a6) = NULL;
 
 bool ParlessGameY5::hook_add_file()
 {
@@ -55,6 +56,14 @@ bool ParlessGameY5::hook_add_file()
         cout << "Y5AddStreamFile could not be enabled. Aborting.\n";
         return false;
     }
+    /*
+    void* renameMotionArchiveFunc = get_pattern("48 89 4C 24 ? 55 56 57 41 56 41 57 48 83 EC ? 48 C7 44 24 ? ? ? ? ? 48 89 9C 24 ? ? ? ? 41 8B F02");
 
+    if (MH_CreateHook(renameMotionArchiveFunc, &ParlessGameY5::Y5MotionArchiveEntry, reinterpret_cast<LPVOID*>(&orgY5MotionArchiveEntry)) != MH_OK)
+        return false;
+
+    if (MH_EnableHook(renameMotionArchiveFunc) != MH_OK)
+        return false;
+        */
     return true;
 }
