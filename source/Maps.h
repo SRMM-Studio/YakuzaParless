@@ -31,7 +31,8 @@ enum class Game
 	LikeADragonInfiniteWealth,
 	LikeADragonPiratesInHawaii,
 	VF5Revo,
-	Century
+	Century,
+	YakuzaKiwami3
 };
 
 Game getGame(string name)
@@ -53,6 +54,7 @@ Game getGame(string name)
 	if (name == "likeadragon8") return Game::LikeADragonInfiniteWealth;
 	if (name == "vfrevobeta" || name == "vfrevo") return Game::VF5Revo;
 	if (name == "likeadragonpirates") return Game::LikeADragonPiratesInHawaii;
+	if (name == "yakuzakiwami3") return Game::YakuzaKiwami3;
 
 	return Game::Unsupported;
 }
@@ -91,6 +93,8 @@ const char* getGameName(Game game)
 			return "Like a Dragon: Infinite Wealth";
 		case Game::LikeADragonPiratesInHawaii:
 			return "Like a Dragon: Pirate Yakuza in Hawaii";
+		case Game::YakuzaKiwami3:
+			return "Yakuza Kiwami 3";
 		case Game::Unsupported:
 		default:
 			return "Unsupported";
