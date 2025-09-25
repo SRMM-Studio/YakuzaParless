@@ -31,6 +31,8 @@ bool ParlessGameY0::hook_add_file()
 	void* loadBgmFunc = get_pattern("48 89 6C 24 10 56 57 41 56 48 81 EC ? ? ? ? 44 89 41 24");
 	void* loadStreamFunc = get_pattern("40 53 48 83 EC ? 48 8B D9 48 8B 49 10 4C 8B C2"); //get_pattern("40 53 48 83 EC ? 48 8B D9 48 8B 49 10 4C 8B C2");
 
+	hook_BindCpk = (t_CriBind*)get_pattern("41 57 48 83 EC ? 4C 8B A4 24 B8 00 00 00", -22);
+
 	cpkRedirectPatchLocation = get_pattern("75 ? 49 83 F8 ? 75 ? 48 8B 47 18 48 89 9C 24 60 01 00 00");
 
 	if (MH_CreateHook(loadBgmFunc, &CBaseParlessGameOE::LoadBGM, reinterpret_cast<LPVOID*>(&orgOELoadBGM)) != MH_OK)
@@ -63,6 +65,15 @@ bool ParlessGameY0::hook_add_file()
 
 	// this will take care of every file that is read from disk
 	InjectHook(renameFilePathsFunc, trampoline->Jump(Y0AddFileEntry));
+
+	renameFilePathsFunc = get_pattern("8B 4D D7 4A 8D 74 28 20 48 83 E6 E0 48 8D BE 9F 02 00 00", -13);
+	ReadCall(renameFilePathsFunc, orgY0CpkEntry);
+
+	InjectHook(renameFilePathsFunc, trampoline->Jump(Y0CpkEntry));
+
+	cout << "Applied CPK loading hook.\n";
+
+	org_BindCpk = (t_CriBind)((char*)org_BindCpk + 1);
 
 
 	return true;
