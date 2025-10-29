@@ -3,6 +3,8 @@
 class ParlessGameLADPYIH : public CBaseParlessGameDE
 {
 public:
+	const char* modded_ubik_path = "/mods/Parless/ubik/\0";
+
 	std::string get_name() override
 	{
 		return "Like A Dragon: Pirate Yakuza in Hawaii";

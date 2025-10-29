@@ -34,6 +34,8 @@ bool ParlessGameYK1::hook_add_file()
 	void* loadBgmFunc = get_pattern("48 89 74 24 10 57 41 56 41 57 48 81 EC ? ? ? ?");
 	void* loadStreamFunc = get_pattern("40 53 48 83 EC ? 48 8B D9 48 8B 49 10 4C 8B C2"); //get_pattern("40 53 48 83 EC ? 48 8B D9 48 8B 49 10 4C 8B C2");
 
+	hook_OEAddUSMFile = (t_OEAddUSMFile)ReadCallFrom(get_pattern("E8 ? ? ? ? C7 86 ? ? ? ? ? ? ? ? 0F B6 84 24"));
+
 	cpkRedirectPatchLocation = get_pattern("75 ? 49 83 F8 ? 75 ? 48 8B 47 18 48 89 9C 24 60 01 00 00");
 
 	if (MH_CreateHook(loadBgmFunc, &CBaseParlessGameOE::LoadBGM, reinterpret_cast<LPVOID*>(&orgOELoadBGM)) != MH_OK)
@@ -55,6 +57,18 @@ bool ParlessGameYK1::hook_add_file()
 	}
 
 	if (MH_EnableHook(loadStreamFunc) != MH_OK)
+	{
+		cout << "Hook could not be enabled. Aborting.\n";
+		return false;
+	}
+
+	if (MH_CreateHook(hook_OEAddUSMFile, &CBaseParlessGameOE::AddUSMFile, reinterpret_cast<LPVOID*>(&org_OEAddUSMFile)) != MH_OK)
+	{
+		cout << "Hook creation failed. Aborting.\n";
+		return false;
+	}
+
+	if (MH_EnableHook(hook_OEAddUSMFile) != MH_OK)
 	{
 		cout << "Hook could not be enabled. Aborting.\n";
 		return false;

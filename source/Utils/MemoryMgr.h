@@ -97,6 +97,15 @@ namespace Memory
 	inline void		Patch(AT address, T value)
 	{*(T*)address = value; }
 
+	inline void Patch2(BYTE* dst, BYTE* src, unsigned int size)
+	{
+		DWORD oldProtect;
+
+		VirtualProtect(dst, size, PAGE_EXECUTE_READWRITE, &oldProtect);
+		memcpy(dst, src, size);
+		VirtualProtect(dst, size, oldProtect, &oldProtect);
+	}
+
 	template<typename AT>
 	inline void		Nop(AT address, size_t count)
 #ifndef _MEMORY_NO_CRT

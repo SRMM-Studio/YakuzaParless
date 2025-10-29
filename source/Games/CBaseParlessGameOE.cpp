@@ -8,6 +8,10 @@ const char* (*CBaseParlessGameOE::orgOEGetBGMName)(int id) = nullptr;
 const char* (*CBaseParlessGameOE::orgOEGetFileFullPath)(char* buf, char* directory, char* fileName) = nullptr;
 __int64 (*CBaseParlessGameOE::orgOELoadBGM)(__int64 thisObj, int* unknown, int id, float unknown2);
 __int64 (*CBaseParlessGameOE::orgOELoadStream)(__int64 thisObj, char* fullPath);
+
+CBaseParlessGameOE::t_OEAddUSMFile CBaseParlessGameOE::hook_OEAddUSMFile = NULL;
+CBaseParlessGameOE::t_OEAddUSMFile CBaseParlessGameOE::org_OEAddUSMFile = NULL;
+
 void* CBaseParlessGameOE::cpkRedirectPatchLocation = 0;
 
 
@@ -72,4 +76,10 @@ __int64 CBaseParlessGameOE::LoadStreamFile(__int64 thisObj, char* fullPath)
 {
 	RenameFilePaths(fullPath);
 	return orgOELoadStream(thisObj, fullPath);
+}
+
+void* CBaseParlessGameOE::AddUSMFile(__int64 a1, char* filePath, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11)
+{
+	RenameFilePaths(filePath);
+	return org_OEAddUSMFile(a1, filePath, a3, a4, a5, a6, a7, a8, a9, a10, a11);
 }

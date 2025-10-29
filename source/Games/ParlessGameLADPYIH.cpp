@@ -20,7 +20,7 @@ ParlessGameLADPYIH::t_orgPYIHGetEntityPath(*ParlessGameLADPYIH::hookPYIHGetEntit
 bool ParlessGameLADPYIH::hook_add_file()
 {
 
-	hookPYIHAddFileEntry = (t_orgPYIHAddFileEntry*)(t_orgPYIHAddFileEntry*)0x1402B4560;
+	hookPYIHAddFileEntry = (t_orgPYIHAddFileEntry*)pattern("4C 89 4C 24 20 89 54 24 10 55 53 56 57 41 54 41 55 41 56 41 57 48 81 EC ? ? ? ? 48 8D 6C 24 20 8B 04 24 44 8B FA C5 F8 29 B5 B0 02 00 00").get_first();
 
 	if (MH_CreateHook(hookPYIHAddFileEntry, &PYIHAddFileEntry, reinterpret_cast<LPVOID*>(&orgPYIHAddFileEntry)) != MH_OK)
 	{
