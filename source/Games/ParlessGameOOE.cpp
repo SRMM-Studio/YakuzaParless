@@ -48,8 +48,7 @@ bool ParlessGameOOE::hook_add_file()
 		return false;
 
 	void* renameMotionArchiveFunc;
-	
-	/*
+
 	if (!isY3)
 		renameMotionArchiveFunc = get_pattern("40 57 48 83 EC ? 48 C7 44 24 50 ? ? ? ? 48 89 5C 24 78 48 8B D9 80 B9 28 01 00 00 ?");
 	else
@@ -60,7 +59,6 @@ bool ParlessGameOOE::hook_add_file()
 
 	if (MH_EnableHook(renameMotionArchiveFunc) != MH_OK)
 		return false;
-		*/
 
 	return true;
 };

@@ -15,6 +15,9 @@ CBaseParlessGameOE::t_OEAddUSMFile CBaseParlessGameOE::org_OEAddUSMFile = NULL;
 void* CBaseParlessGameOE::cpkRedirectPatchLocation = 0;
 
 
+__int64 (*CBaseParlessGameOE::orgOEMotionArchiveEntry)(_int64 a1, char* filePath, int a3, int a4, int a5, char a6) = NULL;
+
+
 std::string CBaseParlessGameOE::translate_path_original(std::string path, int indexOfData)
 {
 	std::vector<int> parts = splitPath(path, indexOfData, 3); //TODO!!!

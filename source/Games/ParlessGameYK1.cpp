@@ -90,5 +90,13 @@ bool ParlessGameYK1::hook_add_file()
 
 	org_BindCpk = (t_CriBind)((char*)org_BindCpk + 1);
 
+	void* renameMotionArchiveFunc = get_pattern("48 89 4C 24 ? 41 56 48 83 EC ? 48 C7 44 24 ? ? ? ? ? 48 89 5C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 41 8B F0");
+
+	if (MH_CreateHook(renameMotionArchiveFunc, &CBaseParlessGameOE::OEMotionArchiveEntry, reinterpret_cast<LPVOID*>(&orgOEMotionArchiveEntry)) != MH_OK)
+		return false;
+
+	if (MH_EnableHook(renameMotionArchiveFunc) != MH_OK)
+		return false;
+
 	return true;
 }
