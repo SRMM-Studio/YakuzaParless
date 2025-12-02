@@ -29,7 +29,7 @@ static HMODULE hDLLModule;
 
 namespace Parless
 {
-	const char* VERSION = "2.4.2";
+	const char* VERSION = "2.4.3";
 	
 	t_CriBind(*hook_BindCpk);
 	t_CriBind org_BindCpk = NULL;
@@ -105,7 +105,6 @@ namespace Parless
 		//Replace double forward slashes if it exists
 		//Encountered this behavior for first time in pirate game
 		//Broke chara texture replacing
-
 		size_t doublePath = firstIndexOf(path, "//");
 		if (doublePath != 18446744073709551615)
 		{

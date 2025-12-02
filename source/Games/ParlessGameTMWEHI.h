@@ -16,6 +16,7 @@ public:
 		parless_stringmap result = parless_stringmap();
 		result["/entity"] = "/entity_aston";
 		result["/ui.aston/texture"] = "/ui.aston.common/texture";
+		result["/movie30"] = "/moviesd";
 
 		for (int i = 0; i < locGaidenVec.size(); i++)
 		{

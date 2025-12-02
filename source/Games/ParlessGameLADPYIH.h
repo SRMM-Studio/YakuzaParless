@@ -18,6 +18,7 @@ public:
 		parless_stringmap result = parless_stringmap();
 		result["/entity"] = "/entity_spr";
 		result["/ui.spr/texture"] = "/ui.spr.common/texture";
+		result["/movie30"] = "/moviesd";
 
 		for (int i = 0; i < locInfWealthVec.size(); i++)
 		{

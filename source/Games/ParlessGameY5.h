@@ -74,8 +74,11 @@ public:
 
 	static __int64 Y5MotionArchiveEntry(__int64 a1, char* filePath, int a3, int a4, int a5, char a6)
 	{
-		RenameFilePaths(filePath);
-		return orgY5MotionArchiveEntry(a1, filePath, a3, a4, a5, a6);
+		char buf[272];
+		strcpy_s(buf, 256, filePath);
+
+		RenameFilePaths(buf);
+		return orgY5MotionArchiveEntry(a1, buf, a3, a4, a5, a6);
 	}
 
 	static void Y5GenerateTougiContestantPool(int a1, void* a2, void* fileTougijyoParticipant, void* a3, void* a4, void* a5) {

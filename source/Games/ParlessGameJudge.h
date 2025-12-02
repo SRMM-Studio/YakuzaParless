@@ -15,6 +15,7 @@ public:
 
 		parless_stringmap result = parless_stringmap();
 		result["/entity"] = "/entity_judge";
+		result["/movie30"] = "/movie";
 
 		for (int i = 0; i < locJudgeVec.size(); i++)
 		{

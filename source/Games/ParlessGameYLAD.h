@@ -15,6 +15,7 @@ class ParlessGameYLAD : public CBaseParlessGameDE
 
 		parless_stringmap result = parless_stringmap();
 		result["/entity"] = "/entity_yazawa";
+		result["/movie"] = "/mvsfd";
 
 		for (int i = 0; i < locY7Vec.size(); i++)
 		{
