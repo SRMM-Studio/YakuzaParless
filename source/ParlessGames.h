@@ -4,6 +4,7 @@
 #include "Games/ParlessGameOOE.h"
 #include "Games/ParlessGameY5.h"
 #include "Games/ParlessGameY0.h"
+#include "Games/ParlessGameY0DC.h"
 #include "Games/ParlessGameYK1.h"
 #include "Games/ParlessGameY6.h"
 #include "Games/ParlessGameYK2.h"
@@ -34,6 +35,11 @@ CBaseParlessGame* get_parless_game(Game game)
 	case Game::Yakuza0:
 	{
 		return new ParlessGameY0();
+	}
+
+	case Game::Yakuza0DC:
+	{
+		return new ParlessGameY0DC();
 	}
 
 	case Game::YakuzaKiwami:

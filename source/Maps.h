@@ -17,6 +17,7 @@ enum class Game
 	Yakuza4,
 	Yakuza5,
 	Yakuza0,
+	Yakuza0DC,
 	YakuzaKiwami,
 
 	// Dragon Engine
@@ -42,6 +43,7 @@ Game getGame(string name)
 	if (startsWith(name, "yakuza3")) return Game::Yakuza3;
 	if (startsWith(name, "yakuza4")) return Game::Yakuza4;
 	if (startsWith(name, "yakuza5")) return Game::Yakuza5;
+	if (startsWith(name, "yakuza0_dc")) return Game::Yakuza0DC;
 	if (startsWith(name, "yakuza0")) return Game::Yakuza0;
 	if (name == "yakuzakiwami") return Game::YakuzaKiwami;
 	if (startsWith(name, "yakuza6")) return Game::Yakuza6;
