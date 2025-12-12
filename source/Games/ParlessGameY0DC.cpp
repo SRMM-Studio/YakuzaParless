@@ -45,9 +45,10 @@ bool ParlessGameY0DC::hook_add_file()
 		return false;
 	}
 
+	/*
 	if (MH_CreateHook(hook_OEAddUSMFile, &CBaseParlessGameOE::AddUSMFile, reinterpret_cast<LPVOID*>(&org_OEAddUSMFile)) != MH_OK)
 	{
-		cout << "Hook creation failed. Aborting.\n";
+		cout << "Hook creation failed.re Aborting.\n";
 		return false;
 	}
 
@@ -56,6 +57,7 @@ bool ParlessGameY0DC::hook_add_file()
 		cout << "Hook could not be enabled. Aborting.\n";
 		return false;
 	}
+	*/
 
 	BYTE patch[]{ 0xEB };
 
@@ -84,11 +86,13 @@ bool ParlessGameY0DC::hook_add_file()
 	
 	void* renameMotionArchiveFunc = get_pattern("E8 ? ? ? ? 48 8B D0 EB ? 48 8B D7 8B CF");
 
+	/*
 	if (MH_CreateHook(renameMotionArchiveFunc, &CBaseParlessGameOE::OEMotionArchiveEntry, reinterpret_cast<LPVOID*>(&orgOEMotionArchiveEntry)) != MH_OK)
 		return false;
 
 	if (MH_EnableHook(renameMotionArchiveFunc) != MH_OK)
 		return false;
+		*/
 
 	return true;
 }

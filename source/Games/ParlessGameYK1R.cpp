@@ -12,6 +12,9 @@ using namespace Memory;
 __int64 (*ParlessGameYK1R::orgY0AddFileEntry)(__int64 a1, char* filepath, __int64 a3, int a4, __int64 a5, __int64 a6, char a7, __int64 a8, char a9, char a10, char a11, char a12, char a13) = NULL;
 __int64 (*ParlessGameYK1R::orgY0CpkEntry)(__int64 a1, __int64 a2, __int64 a3, __int64 a4) = NULL;
 
+ParlessGameYK1R::t_YK1RAddUSMFile ParlessGameYK1R::hook_YK1RAddUSMFile = NULL;
+ParlessGameYK1R::t_YK1RAddUSMFile ParlessGameYK1R::org_YK1RAddUSMFile = NULL;
+
 std::string ParlessGameYK1R::get_name()
 {
 	return "Yakuza Kiwami: Remastered";
@@ -23,7 +26,7 @@ bool ParlessGameYK1R::hook_add_file()
 
 	Trampoline* trampoline = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
 
-	hook_OEAddUSMFile = (t_OEAddUSMFile)ReadCallFrom(get_pattern("E8 ? ? ? ? 83 7B ? ? 89 83"));
+	hook_YK1RAddUSMFile = (t_YK1RAddUSMFile)ReadCallFrom(get_pattern("E8 ? ? ? ? C7 83 ? ? ? ? ? ? ? ? 0F B6 84 24"));
 	//hook_BindCpk = (t_CriBind*)get_pattern("48 8B C4 48 89 58 ? 48 89 70 ? 48 89 78 ? 4C 89 40 ? 55 41 54 41 55 41 56 41 57 48 8B EC");
 
 	void* loadStreamFunc = get_pattern("40 53 48 83 EC ? 48 8B D9 4C 8B C2 48 8B 49"); 
@@ -41,13 +44,13 @@ bool ParlessGameYK1R::hook_add_file()
 		return false;
 	}
 
-	if (MH_CreateHook(hook_OEAddUSMFile, &CBaseParlessGameOE::AddUSMFile, reinterpret_cast<LPVOID*>(&org_OEAddUSMFile)) != MH_OK)
+	if (MH_CreateHook(hook_YK1RAddUSMFile, &CBaseParlessGameOE::AddUSMFile, reinterpret_cast<LPVOID*>(&org_OEAddUSMFile)) != MH_OK)
 	{
 		cout << "Hook creation failed. Aborting.\n";
 		return false;
 	}
 
-	if (MH_EnableHook(hook_OEAddUSMFile) != MH_OK)
+	if (MH_EnableHook(hook_YK1RAddUSMFile) != MH_OK)
 	{
 		cout << "Hook could not be enabled. Aborting.\n";
 		return false;

@@ -4,6 +4,11 @@ class ParlessGameYK1R : public CBaseParlessGameOE
 {
 	static __int64 (*orgY0AddFileEntry)(__int64 a1, char* filepath, __int64 a3, int a4, __int64 a5, __int64 a6, char a7, __int64 a8, char a9, char a10, char a11, char a12, char a13);
 	static __int64 (*orgY0CpkEntry)(__int64 a1, __int64 a2, __int64 a3, __int64 a4);
+	typedef void* (*t_YK1RAddUSMFile)(char* filePath, int width, int height, int a1, int a2, int a3, int a4, int a5);
+
+	static t_YK1RAddUSMFile hook_YK1RAddUSMFile;
+	static t_YK1RAddUSMFile org_YK1RAddUSMFile;
+
 public:
 	std::string get_name() override;
 
@@ -31,6 +36,13 @@ public:
 	};
 
 	bool hook_add_file() override;
+
+
+	static void* YK1RAddUSMFile(char* filePath, int width, int height, int a1, int a2, int a3, int a4, int a5)
+	{
+		RenameFilePaths(filePath);
+		return org_YK1RAddUSMFile(filePath, width, height, a1, a2, a3, a4, a5);
+	}
 
 
 	static __int64 YK1RAddFileEntry(__int64 a1, char* filepath, __int64 a3, int a4, __int64 a5, __int64 a6, char a7, __int64 a8, char a9, char a10, char a11, char a12, char a13)

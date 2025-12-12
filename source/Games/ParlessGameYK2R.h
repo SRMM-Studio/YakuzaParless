@@ -5,6 +5,11 @@ class ParlessGameYK2R : public CBaseParlessGameDE
 	static int (*orgYK2AddFileEntry)(short* a1, int a2, char* a3, char** a4);
 	static uint64_t(*orgYK2SprintfAwb)(uint64_t param_1, uint64_t param_2, uint64_t param_3, uint64_t param_4);
 
+	typedef int (*t_orgYK2RGetEntityPath)(char* in_path, unsigned int e_kind, unsigned int stageid, unsigned int daynight, void* uid);
+
+	static t_orgYK2RGetEntityPath orgYK2RGetEntityPath;
+	static t_orgYK2RGetEntityPath(*hookYK2RGetEntityPath);
+
 	virtual std::string get_name() override
 	{
 		return "Yakuza Kiwami 2 Remastered";
@@ -30,5 +35,14 @@ class ParlessGameYK2R : public CBaseParlessGameDE
 		uint64_t result = orgYK2SprintfAwb(a1, a2, a3, a4);
 		RenameFilePaths((char*)result);
 		return result;
+	}
+
+
+	static int YK2RGetEntityPath(char* in_path, unsigned int e_kind, unsigned int stageid, unsigned int daynight, __int64* uid)
+	{
+		orgYK2RGetEntityPath(in_path, e_kind, stageid, daynight, uid);
+		RenameFilePaths(in_path);
+
+		return 0;
 	}
 };
