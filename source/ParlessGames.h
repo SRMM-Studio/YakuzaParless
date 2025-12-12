@@ -6,8 +6,10 @@
 #include "Games/ParlessGameY0.h"
 #include "Games/ParlessGameY0DC.h"
 #include "Games/ParlessGameYK1.h"
+#include "Games/ParlessGameYK1R.h"
 #include "Games/ParlessGameY6.h"
 #include "Games/ParlessGameYK2.h"
+#include "Games/ParlessGameYK2R.h"
 #include "Games/ParlessGameJudge.h"
 #include "Games/ParlessGameYLAD.h"
 #include "Games/ParlessGameLJ.h"
@@ -46,6 +48,10 @@ CBaseParlessGame* get_parless_game(Game game)
 	{
 		return new ParlessGameYK1();
 	}
+	case Game::YakuzaKiwamiRemastered:
+	{
+		return new ParlessGameYK1R();
+	}
 	case Game::Yakuza5:
 	{
 		return new ParlessGameY5();
@@ -58,7 +64,10 @@ CBaseParlessGame* get_parless_game(Game game)
 	{
 		return new ParlessGameYK2();
 	}
-
+	case Game::YakuzaKiwami2Remastered:
+	{
+		return new ParlessGameYK2R();
+	}
 	case Game::Judgment:
 	{
 		return new ParlessGameJudge();

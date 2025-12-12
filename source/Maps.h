@@ -19,10 +19,12 @@ enum class Game
 	Yakuza0,
 	Yakuza0DC,
 	YakuzaKiwami,
+	YakuzaKiwamiRemastered,
 
 	// Dragon Engine
 	Yakuza6,
 	YakuzaKiwami2,
+	YakuzaKiwami2Remastered,
 	YakuzaLikeADragon,
 	Judgment,
 	LostJudgment,
@@ -45,8 +47,10 @@ Game getGame(string name)
 	if (startsWith(name, "yakuza5")) return Game::Yakuza5;
 	if (startsWith(name, "yakuza0_dc")) return Game::Yakuza0DC;
 	if (startsWith(name, "yakuza0")) return Game::Yakuza0;
+	if (name == "yakuzakiwami_r") return Game::YakuzaKiwamiRemastered;
 	if (name == "yakuzakiwami") return Game::YakuzaKiwami;
 	if (startsWith(name, "yakuza6")) return Game::Yakuza6;
+	if (startsWith(name, "yakuzakiwami2_r")) return Game::YakuzaKiwami2Remastered;
 	if (startsWith(name, "yakuzakiwami2")) return Game::YakuzaKiwami2;
 	if (startsWith(name, "yakuzalikeadragon")) return Game::YakuzaLikeADragon;
 	if (name == "eve") return Game::VFeSports;
