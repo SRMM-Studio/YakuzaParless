@@ -23,8 +23,6 @@ bool ParlessGameY0DC::hook_add_file()
 
 	Trampoline* trampoline = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
 
-	
-
 	hook_OEAddUSMFile = (t_OEAddUSMFile)ReadCallFrom(get_pattern("E8 ? ? ? ? 48 8B 9C 24 ? ? ? ? 89 AB"));
 	//hook_BindCpk = (t_CriBind*)get_pattern("48 8B C4 48 89 58 ? 48 89 70 ? 48 89 78 ? 4C 89 40 ? 55 41 54 41 55 41 56 41 57 48 8B EC");
 
@@ -60,11 +58,12 @@ bool ParlessGameY0DC::hook_add_file()
 	*/
 
 	BYTE patch[]{ 0xEB };
+	BYTE patch2[]{ 0xE9, 0xAD, 0x0, 0x0, 0x0, 0x90 };
 
-	//Force the game to load from stream folders and not the pars
+	//Force the game to load from stream folders and not the par
 	Memory::Patch2((BYTE*)get_pattern("72 ? 48 8B 7E"), patch, 1);
 	Memory::Patch2((BYTE*)get_pattern("73 ? 8B CD E8"), patch, 1);
-	Memory::Patch2((BYTE*)get_pattern("0F 83 ? ? ? ? 8B CD E8"), patch, 1);
+	Memory::Patch2((BYTE*)get_pattern("0F 83 ? ? ? ? 8B CD E8"), patch2, 6);
 
 
 	// might want to hook the other call of this function as well, but currently not necessary (?)
