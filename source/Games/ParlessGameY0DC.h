@@ -23,6 +23,8 @@ public:
 				{"/boot" , "/bootpar/boot"},
 				{"/stay" , "/staypar/stay"},
 				{"/sound" , "/soundpar/sound"},
+				{"/sound_en" , "/soundpar/sound_en"},
+				{"/sound_zh" , "/soundpar/sound_zh"},
 				{"/battle" , "/battlepar/battle"},
 				{"/reactor_ngen" , "/reactorpar/reactor_ngen"},
 				{"/wdr_" + loc2 + "/common" , "/wdr_par_" + loc2 + "/common"},
