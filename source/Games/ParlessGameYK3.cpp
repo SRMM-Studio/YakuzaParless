@@ -81,7 +81,8 @@ bool ParlessGameYK3::hook_add_file()
 		{
 			int len = strlen(modded_ubik_path) + 1; //null terminator
 
-			VirtualProtect((void*)szUbik, len, PAGE_EXECUTE_READWRITE, nullptr);
+			DWORD oldProtect;
+			VirtualProtect((void*)szUbik, 32, PAGE_READWRITE, &oldProtect);
 			memcpy_s((void*)szUbik, len, (void*)modded_ubik_path, len);
 		}
 	}

@@ -60,7 +60,9 @@ bool ParlessGameIW::hook_add_file()
 		const char* szUbik = (const char*)*ubikAddr;
 		void* block = AllocateBuffer((void*)szUbik);
 
-		memcpy_s(block, strlen(modded_ubik_path), (void*)modded_ubik_path, strlen(modded_ubik_path));
+		const char* ubikPath = "data/../mods/Parless/ubik/\0";
+
+		memcpy_s(block, strlen(modded_ubik_path), (void*)ubikPath, strlen(ubikPath));
 
 		*ubikAddr = (long*)block;
 	}

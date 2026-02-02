@@ -3,6 +3,8 @@
 class ParlessGameYK3 : public CBaseParlessGameDE
 {
 public:
+	const char* modded_ubik_path = "/mods/Parless/ubik/\0";
+
 	std::string get_name() override
 	{
 		return "Yakuza Kiwami 3";

@@ -75,7 +75,8 @@ bool ParlessGameLADPYIH::hook_add_file()
 		const char* szUbik = (const char*)pattern("64 61 74 61 2F 63 68 61 72 61 2F 75 62 69 6B 2F 00 00 00 00 00").get_first();
 		int len = strlen(modded_ubik_path) + 1; //null terminator
 
-		VirtualProtect((void*)szUbik, len, PAGE_EXECUTE_READWRITE, nullptr);
+		DWORD oldProtect;
+		VirtualProtect((void*)szUbik, len, PAGE_EXECUTE_READWRITE, &oldProtect);
 		memcpy_s((void*)szUbik, len, (void*)modded_ubik_path, len);
 	}
 	
