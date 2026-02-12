@@ -13,15 +13,15 @@ public:
 	parless_stringmap get_game_map(Locale locale) override
 	{
 		std::string curLoc;
-		std::vector<const char*> locInfWealthVec{ "de", "en", "es", "fr", "it", "ja", "ko", "zh", "zhs", "zht", "ru", "pt"};
+		std::vector<const char*> locYK3Vec{ "de", "en", "es", "fr", "it", "ja", "ko", "zh", "zhs", "zht", "ru", "pt", "esl", "ese"};
 
 		parless_stringmap result = parless_stringmap();
 		result["/entity"] = "/entity_bis";
 		result["/ui.bis/texture"] = "/ui.bis.common/texture";
 
-		for (int i = 0; i < locInfWealthVec.size(); i++)
+		for (int i = 0; i < locYK3Vec.size(); i++)
 		{
-			curLoc = std::string(locInfWealthVec[i]);
+			curLoc = std::string(locYK3Vec[i]);
 			result["/db.bis/" + curLoc] = "/db.bis." + curLoc;
 			result["/ui.bis/" + curLoc] = "/ui.bis." + curLoc;
 		}
