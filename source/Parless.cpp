@@ -24,6 +24,7 @@
 #include <regex>
 
 #include "ParlessGames.h"
+#include "LinuxMLO.h"
 
 static HMODULE hDLLModule;
 
@@ -373,6 +374,14 @@ void RebuildMLO()
 {
 	STARTUPINFOA info = { sizeof(info) };
 	PROCESS_INFORMATION processInfo;
+
+	// Special handling for Linux users
+	if (GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "wine_get_version") != nullptr)
+	{
+		Parless::HandleLinuxMLO();
+
+		return;
+	}
 
 	char cmdArgs[] = "ShinRyuModManager.exe -s";
 	if (CreateProcessA("ShinRyuModManager.exe", cmdArgs, NULL, NULL, TRUE, 0, NULL, NULL, &info, &processInfo))
