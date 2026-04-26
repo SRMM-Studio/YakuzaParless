@@ -21,13 +21,9 @@ namespace Parless
         shimPath.resize(shimPathLength);
 
         string exeDir = shimPath.substr(0, shimPath.find_last_of("\\/"));
-
         string cmd = exeDir + "\\ShinRyuModManager-CE";
-
         string unixCmd = ToUnixViaWine(cmd);
-
         string unixDir = unixCmd.substr(0, unixCmd.find_last_of('/'));
-
         string scriptWin = exeDir + "\\.srmm-run.sh";
         string scriptUnix = unixDir + "/.srmm-run.sh";
         string doneWin = exeDir + "\\.srmm-done";
@@ -51,9 +47,12 @@ namespace Parless
         {
             string chmodCmd = R"(start.exe /wait /unix /bin/chmod +x ")" + scriptUnix + "\"";
             vector b(chmodCmd.begin(), chmodCmd.end());
+
             b.push_back('\0');
+
             STARTUPINFOA si2 = { sizeof(si2) };
             PROCESS_INFORMATION pi2 = {};
+
             if (CreateProcessA(nullptr, b.data(), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si2, &pi2)) {
                 WaitForSingleObject(pi2.hProcess, INFINITE);
                 CloseHandle(pi2.hThread);
@@ -66,6 +65,7 @@ namespace Parless
         SetCurrentDirectoryA(exeDir.c_str());
 
         vector buf(cmdLine.begin(), cmdLine.end());
+
         buf.push_back('\0');
 
         STARTUPINFOA si = { sizeof(si) };
@@ -82,7 +82,6 @@ namespace Parless
         CloseHandle(pi.hProcess);
 
         // Waits for the "done" file to be created
-        DWORD exitCode = 1;
         const DWORD startTick = GetTickCount();
         constexpr  DWORD timeoutMs = 10 * 60 * 1000; // 10 minutes hard limit
 
@@ -92,17 +91,11 @@ namespace Parless
                 ifstream f(doneWin);
 
                 if (int ec = -1; f >> ec) {
-                    exitCode = static_cast<DWORD>(ec);
-
                     break;
                 }
             }
 
             Sleep(100);
-        }
-
-        if (GetTickCount() - startTick > timeoutMs) {
-            exitCode = 124;
         }
 
         // Clean up
