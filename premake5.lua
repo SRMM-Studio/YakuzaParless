@@ -57,7 +57,7 @@ filter "configurations:Debug"
 filter "configurations:not Debug"
 	optimize "Speed"
 	functionlevellinking "on"
-	linktimeoptimization "on"
+	flags { "LinkTimeOptimization" }
 
 filter { "platforms:Win32" }
 	system "Windows"
