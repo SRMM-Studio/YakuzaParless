@@ -14,26 +14,40 @@ public:
 
 	virtual parless_stringmap get_game_map(Locale locale) override
 	{
-		std::vector<const char*> locVec{ "e", "j", "z", "k" };
-		std::vector<const char*> loc2Vec{ "c", "j", "z", "k" };
+		std::vector<const char*> locVec{ "c", "e", "d", "f", "h", "i", "j", "k", "l", "p", "r", "s", "z" };
+		std::vector<const char*> loc2Vec{ "c", "d", "f", "h", "i", "j", "k", "l", "p", "r", "s", "z"};
 
 		std::string loc = locVec[(int)locale]; 
 		std::string loc2 = loc2Vec[(int)locale];
 
-		return 	parless_stringmap({
+		auto map =  parless_stringmap({
 				{"/font" , "/fontpar/font"},
-				{"/2d/ui_" + loc, "/2dpar/ui_" + loc},
 				{"/2d/ui_common", "/2dpar/ui_common"},
-				{"/2d/sprite_" + loc2 , "/2dpar/sprite_" + loc2},
 				{"/boot" , "/bootpar/boot"},
 				{"/stay" , "/staypar/stay"},
 				{"/sound" , "/soundpar/sound"},
 				{"/battle" , "/battlepar/battle"},
 				{"/reactor_w64" , "/reactorpar/reactor_w64"},
-				{"/wdr_" + loc2 + "/common" , "/wdr_par_" + loc2 + "/common"},
-				{"/wdr_" + loc2 , "/wdr_par_" + loc2 + "/wdr"},
 				{"/light_anim" , "/light_anim/light_anim"},
 			});
+
+		std::string curLoc;
+
+		for (int i = 0; i < locVec.size(); i++)
+		{
+			curLoc = std::string(locVec[i]);
+			map["/2d/ui_" + curLoc] = "/2dpar/ui_" + curLoc;
+		}
+
+		for (int i = 0; i < loc2Vec.size(); i++)
+		{
+			curLoc = std::string(loc2Vec[i]);
+			map["/wdr_" + curLoc + "/common"] = "/wdr_par_" + curLoc + "/common";
+			map["/wdr_" + curLoc] = "/wdr_par_" + curLoc + "/wdr";
+			map["/2d/sprite_" + curLoc] = "/2dpar/sprite_" + curLoc;
+		}
+
+		return map;
 	};
 
 	bool hook_add_file() override;
