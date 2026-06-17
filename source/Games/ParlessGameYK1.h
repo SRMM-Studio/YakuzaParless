@@ -11,22 +11,36 @@ public:
 
 	virtual parless_stringmap get_game_map(Locale locale) override
 	{
-		std::vector<const char*> loc2Vec{ "c", "j", "z", "k" };
-		std::string loc2 = loc2Vec[(int)locale];
+		std::vector<const char*> locVec{ "c", "j"};
 
-		return 	parless_stringmap({
+		std::string curLoc;
+
+		auto map = parless_stringmap({
 				{"/font" , "/fontpar/font"},
-				{"/2d/ui_" + loc2, "/2dpar/ui_" + loc2},
-				{"/2d/sprite_" + loc2 , "/2dpar/sprite_" + loc2},
+				{"/2d/ui_common", "/2dpar/ui_common"},
 				{"/boot" , "/bootpar/boot"},
 				{"/stay" , "/staypar/stay"},
 				{"/sound" , "/soundpar/sound"},
 				{"/battle" , "/battlepar/battle"},
 				{"/reactor_w64" , "/reactorpar/reactor_w64"},
-				{"/wdr_" + loc2 + "/common" , "/wdr_par_" + loc2 + "/common"},
-				{"/wdr_" + loc2 , "/wdr_par_" + loc2 + "/wdr"},
 				{"/light_anim" , "/light_anim/light_anim"},
 			});
+
+		for (int i = 0; i < locVec.size(); i++)
+		{
+			curLoc = std::string(locVec[i]);
+			map["/2d/ui_" + curLoc] = "/2dpar/ui_" + curLoc;
+		}
+
+		for (int i = 0; i < locVec.size(); i++)
+		{
+			curLoc = std::string(locVec[i]);
+			map["/wdr_" + curLoc + "/common"] = "/wdr_par_" + curLoc + "/common";
+			map["/wdr_" + curLoc] = "/wdr_par_" + curLoc + "/wdr";
+			map["/2d/sprite_" + curLoc] = "/2dpar/sprite_" + curLoc;
+		}
+
+		return map;
 	};
 
 
