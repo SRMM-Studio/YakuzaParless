@@ -23,7 +23,7 @@ bool ParlessGameY0DC::hook_add_file()
 
 	Trampoline* trampoline = Trampoline::MakeTrampoline(GetModuleHandle(nullptr));
 
-	hook_OEAddUSMFile = (t_OEAddUSMFile)ReadCallFrom(get_pattern("E8 ? ? ? ? 48 8B 9C 24 ? ? ? ? 89 AB"));
+	hook_OEAddUSMFile = (t_OEAddUSMFile)get_pattern("4C 8B DC 49 89 5B ? 55 56 57 41 54 41 55 41 56 41 57 48 83 EC ? 41 8B F8");
 	//hook_BindCpk = (t_CriBind*)get_pattern("48 8B C4 48 89 58 ? 48 89 70 ? 48 89 78 ? 4C 89 40 ? 55 41 54 41 55 41 56 41 57 48 8B EC");
 
 
@@ -43,7 +43,7 @@ bool ParlessGameY0DC::hook_add_file()
 		return false;
 	}
 
-	/*
+	
 	if (MH_CreateHook(hook_OEAddUSMFile, &CBaseParlessGameOE::AddUSMFile, reinterpret_cast<LPVOID*>(&org_OEAddUSMFile)) != MH_OK)
 	{
 		cout << "Hook creation failed.re Aborting.\n";
@@ -55,16 +55,14 @@ bool ParlessGameY0DC::hook_add_file()
 		cout << "Hook could not be enabled. Aborting.\n";
 		return false;
 	}
-	*/
 
 	BYTE patch[]{ 0xEB };
 	BYTE patch2[]{ 0xE9, 0xAD, 0x0, 0x0, 0x0, 0x90 };
 
 	//Force the game to load from stream folders and not the par
-	Memory::Patch2((BYTE*)get_pattern("72 ? 48 8B 7E"), patch, 1);
-	Memory::Patch2((BYTE*)get_pattern("73 ? 8B CD E8"), patch, 1);
-	Memory::Patch2((BYTE*)get_pattern("0F 83 ? ? ? ? 8B CD E8"), patch2, 6);
-
+	Memory::Patch2((BYTE*)get_pattern("72 ? 48 8B 7E"), patch, 1); //ja
+	Memory::Nop((BYTE*)get_pattern("73 ? 8B CD E8"), 2); //zh
+	Memory::Nop((BYTE*)get_pattern("0F 83 ? ? ? ? 8B CD E8"), 6); // en
 
 	// might want to hook the other call of this function as well, but currently not necessary (?)
 	renameFilePathsFunc = get_pattern("E8 ? ? ? ? 66 89 83 ? ? ? ? 4D 3B FE");
@@ -83,15 +81,13 @@ bool ParlessGameY0DC::hook_add_file()
 
 	//TODO URGENT
 	
-	void* renameMotionArchiveFunc = get_pattern("E8 ? ? ? ? 48 8B D0 EB ? 48 8B D7 8B CF");
+	void* renameMotionArchiveFunc = get_pattern("48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 48 89 4C 24 ? 57 41 56 41 57 48 83 EC ? 41 8B F0");
 
-	/*
 	if (MH_CreateHook(renameMotionArchiveFunc, &CBaseParlessGameOE::OEMotionArchiveEntry, reinterpret_cast<LPVOID*>(&orgOEMotionArchiveEntry)) != MH_OK)
 		return false;
 
 	if (MH_EnableHook(renameMotionArchiveFunc) != MH_OK)
 		return false;
-		*/
 
 	return true;
 }
