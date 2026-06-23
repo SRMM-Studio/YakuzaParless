@@ -21,7 +21,7 @@ namespace Parless
         shimPath.resize(shimPathLength);
 
         string exeDir = shimPath.substr(0, shimPath.find_last_of("\\/"));
-        string cmd = exeDir + "\\ShinRyuModManager-CE";
+        string cmd = exeDir + "\\ShinRyuModManager
         string unixCmd = ToUnixViaWine(cmd);
         string unixDir = unixCmd.substr(0, unixCmd.find_last_of('/'));
         string scriptWin = exeDir + "\\.srmm-run.sh";
@@ -30,14 +30,14 @@ namespace Parless
 
         DeleteFileA(doneWin.c_str());
 
-        // Creates script for running SRMM-CE properly
+        // Creates script for running SRMM properly
         {
             ofstream s(scriptWin, std::ios::binary);
             s << "#!/bin/sh\n";
             s << "cd \"" << unixDir << "\" || exit 91\n";
             s << "unset LD_PRELOAD LD_LIBRARY_PATH LD_AUDIT\n";
             s << "export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1\n";
-            s << "./ShinRyuModManager-CE -s\n";
+            s << "./ShinRyuModManager -s\n";
             s << "ec=$?\n";
             s << "echo \"$ec\" > .srmm-done\n";
             s << "exit $ec\n";
