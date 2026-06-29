@@ -21,7 +21,7 @@ namespace Parless
         shimPath.resize(shimPathLength);
 
         string exeDir = shimPath.substr(0, shimPath.find_last_of("\\/"));
-        string cmd = exeDir + "\\ShinRyuModManager
+        string cmd = exeDir + "\\ShinRyuModManager";
         string unixCmd = ToUnixViaWine(cmd);
         string unixDir = unixCmd.substr(0, unixCmd.find_last_of('/'));
         string scriptWin = exeDir + "\\.srmm-run.sh";
