@@ -12,6 +12,9 @@ using namespace Memory;
 ParlessGameJudge::t_orgLJAddFileEntry ParlessGameJudge::orgLJAddFileEntry = NULL;
 ParlessGameJudge::t_orgLJAddFileEntry(*ParlessGameJudge::hookLJAddFileEntry) = NULL;
 
+ParlessGameJudge::t_orgJEGetEntityPath ParlessGameJudge::orgJEGetEntityPath = NULL;
+ParlessGameJudge::t_orgJEGetEntityPath(*ParlessGameJudge::hookJEGetEntityPath) = NULL;
+
 bool ParlessGameJudge::hook_add_file()
 {
 	hookLJAddFileEntry = (t_orgLJAddFileEntry*)pattern("41 57 48 8D A8 68 FE FF FF 48 81 EC 58 02 00 00 C5 F8 29 70 A8").get_first(-20);
@@ -25,6 +28,31 @@ bool ParlessGameJudge::hook_add_file()
 	if (MH_EnableHook(hookLJAddFileEntry) != MH_OK)
 	{
 		cout << "Hook could not be enabled. Aborting.\n";
+		return false;
+	}
+
+
+	if (!isXbox)
+	{
+		auto pat = pattern("48 89 5C 24 08 48 89 74 24 10 57 48 83 EC ? 0F B7 FA 48 8B F1");
+
+		if (pat.size() > 0)
+		{
+			hookJEGetEntityPath = (ParlessGameJudge::t_orgJEGetEntityPath*)pat.get(0).get<void>(0);
+
+			if (MH_CreateHook(hookJEGetEntityPath, &JEGetEntityPath, reinterpret_cast<LPVOID*>(&orgJEGetEntityPath)) != MH_OK)
+			{
+				std::cout << "Entity hook creation failed. Aborting.\n";
+				return false;
+			}
+		}
+	}
+	else
+		hookJEGetEntityPath = (t_orgJEGetEntityPath*)pattern("0F B7 FA 48 8B F1 45 85 C0 75 09 48 8D").get_first(-15);
+
+	if (MH_EnableHook(hookJEGetEntityPath) != MH_OK)
+	{
+		std::cout << "Entity hook could not be enabled. Aborting.\n";
 		return false;
 	}
 

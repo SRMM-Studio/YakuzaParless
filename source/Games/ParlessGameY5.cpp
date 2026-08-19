@@ -66,6 +66,21 @@ bool ParlessGameY5::hook_add_file()
         return false;
     }
 
+    auto speechFormat = get_pattern("25 73 3A 25 73 2E 68 63 61 00");
+    auto speechDesc = get_pattern("E8 ? ? ? ? 85 C0 75 ? 48 8D B3");
+
+    BYTE patch1[]{ (uint8_t)'/'};
+    BYTE patch2[]{ 0xB0, 0x1, 0x90, 0x90, 0x90 }; //mov al 01, nop, nop, nop
+
+    //TODO: Forcing the function to return true is not the play, only return true when file eists, commented out for now
+    /*
+    //%s:%s.hca -> %s/%s.hca which means speech can be loaded loosely
+    Patch2((uint8_t*)speechFormat + 2, patch1, 1);
+
+    //force this function to return true so all speech files are routed
+    Patch2((uint8_t*)speechDesc, patch2, 5);
+    */
+
     if (MH_CreateHook(hook_Y5AddUSMFile, &ParlessGameY5::Y5AddUSMFile, reinterpret_cast<LPVOID*>(&org_Y5AddUSMFile)) != MH_OK)
     {
         cout << "Y5AddUSMFile Hook could not be enabled. Aborting.\n";

@@ -77,7 +77,7 @@ bool ParlessGameYLAD::hook_add_file()
 
 			if (MH_CreateHook(hookYLADGetEntityPath, &YLaDGetEntityPath, reinterpret_cast<LPVOID*>(&orgYLADGetEntityPath)) != MH_OK)
 			{
-				std::cout << "Hook creation failed. Aborting.\n";
+				std::cout << "Entity hook creation failed. Aborting.\n";
 				return false;
 			}
 		}
@@ -87,7 +87,7 @@ bool ParlessGameYLAD::hook_add_file()
 
 	if (MH_EnableHook(hookYLADGetEntityPath) != MH_OK)
 	{
-		std::cout << "Hook could not be enabled. Aborting.\n";
+		std::cout << "Entity hook could not be enabled. Aborting.\n";
 		return false;
 	}
 

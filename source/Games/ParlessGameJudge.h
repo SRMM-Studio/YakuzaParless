@@ -33,10 +33,22 @@ public:
 	static t_orgLJAddFileEntry orgLJAddFileEntry;
 	static t_orgLJAddFileEntry(*hookLJAddFileEntry);
 
+	typedef int (*t_orgJEGetEntityPath)(char* in_path, unsigned int e_kind, unsigned int stageid, unsigned int daynight, void* uid);
+	static t_orgJEGetEntityPath orgJEGetEntityPath;
+	static t_orgJEGetEntityPath(*hookJEGetEntityPath);
+
 	static int LJAddFileEntry(short* a1, int a2, char* a3, char** a4)
 	{
 		orgLJAddFileEntry(a1, a2, a3, a4);
 		RenameFilePaths((char*)a1);
 		return strlen((char*)a1);
+	}
+
+	static int JEGetEntityPath(char* in_path, unsigned int e_kind, unsigned int stageid, unsigned int daynight, __int64* uid)
+	{
+		orgJEGetEntityPath(in_path, e_kind, stageid, daynight, uid);
+		RenameFilePaths(in_path);
+
+		return 0;
 	}
 };
