@@ -9,6 +9,11 @@ const char* (*CBaseParlessGameOE::orgOEGetFileFullPath)(char* buf, char* directo
 __int64 (*CBaseParlessGameOE::orgOELoadBGM)(__int64 thisObj, int* unknown, int id, float unknown2);
 __int64 (*CBaseParlessGameOE::orgOELoadStream)(__int64 thisObj, char* fullPath);
 
+
+__int64 (*CBaseParlessGameOE::orgOEShaderEntryFXO)(char* filePath);
+__int64 (*CBaseParlessGameOE::orgOEShaderEntryVSO)(char* filePath);
+__int64 (*CBaseParlessGameOE::orgOEShaderEntryPSO)(char* filePath);
+
 CBaseParlessGameOE::t_OEAddUSMFile CBaseParlessGameOE::hook_OEAddUSMFile = NULL;
 CBaseParlessGameOE::t_OEAddUSMFile CBaseParlessGameOE::org_OEAddUSMFile = NULL;
 

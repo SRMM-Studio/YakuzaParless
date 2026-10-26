@@ -30,6 +30,9 @@ bool ParlessGameY0DC::hook_add_file()
 	void* loadBgmFunc = get_pattern("48 89 5C 24 ? 55 56 41 57 48 81 EC");
 	void* loadStreamFunc = get_pattern("40 53 48 83 EC ? 48 8B D9 4C 8B C2 48 8B 49"); 
 
+	void* loadFxoShader = Memory::ReadCallFrom(get_pattern("E8 ? ? ? ? 4A 89 44 2B"));
+	void* loadPsoShader = Memory::ReadCallFrom(get_pattern("E8 ? ? ? ? 41 89 45 ? B9"));
+	void* loadVsoShader = Memory::ReadCallFrom(get_pattern("E8 ? ? ? ? 48 8B 4C 24 ? 89 84 99"));
 
 	if (MH_CreateHook(loadStreamFunc, &CBaseParlessGameOE::LoadStreamFile, reinterpret_cast<LPVOID*>(&orgOELoadStream)) != MH_OK)
 	{
@@ -53,6 +56,42 @@ bool ParlessGameY0DC::hook_add_file()
 	if (MH_EnableHook(hook_OEAddUSMFile) != MH_OK)
 	{
 		cout << "Hook could not be enabled. Aborting.\n";
+		return false;
+	}
+
+	if (MH_CreateHook(loadFxoShader, &CBaseParlessGameOE::OEShaderEntryFXO, reinterpret_cast<LPVOID*>(&orgOEShaderEntryFXO)) != MH_OK)
+	{
+		cout << "FXO Hook creation failed. Aborting.\n";
+		return false;
+	}
+
+	if (MH_EnableHook(loadFxoShader) != MH_OK)
+	{
+		cout << "FXO Hook could not be enabled. Aborting.\n";
+		return false;
+	}
+
+	if (MH_CreateHook(loadPsoShader, &CBaseParlessGameOE::OEShaderEntryPSO, reinterpret_cast<LPVOID*>(&orgOEShaderEntryPSO)) != MH_OK)
+	{
+		cout << "PSO Hook creation failed. Aborting.\n";
+		return false;
+	}
+
+	if (MH_EnableHook(loadPsoShader) != MH_OK)
+	{
+		cout << "PSO Hook could not be enabled. Aborting.\n";
+		return false;
+	}
+
+	if (MH_CreateHook(loadVsoShader, &CBaseParlessGameOE::OEShaderEntryVSO, reinterpret_cast<LPVOID*>(&orgOEShaderEntryVSO)) != MH_OK)
+	{
+		cout << "VSO Hook creation failed. Aborting.\n";
+		return false;
+	}
+
+	if (MH_EnableHook(loadVsoShader) != MH_OK)
+	{
+		cout << "VSO Hook could not be enabled. Aborting.\n";
 		return false;
 	}
 

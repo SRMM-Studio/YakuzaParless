@@ -29,7 +29,11 @@ bool ParlessGameY0::hook_add_file()
 	Memory::ReadCall(get_pattern("E8 ? ? ? ? 48 8B 4F 18 48 8D 54 24 20"), orgOEGetFileFullPath);
 	
 	void* loadBgmFunc = get_pattern("48 89 6C 24 10 56 57 41 56 48 81 EC ? ? ? ? 44 89 41 24");
-	void* loadStreamFunc = get_pattern("40 53 48 83 EC ? 48 8B D9 48 8B 49 10 4C 8B C2"); //get_pattern("40 53 48 83 EC ? 48 8B D9 48 8B 49 10 4C 8B C2");
+	void* loadStreamFunc = get_pattern("40 53 48 83 EC ? 48 8B D9 48 8B 49 10 4C 8B C2");
+
+	void* loadFxoShader = Memory::ReadCallFrom(get_pattern("E8 ? ? ? ? 49 89 44 1D"));
+	void* loadPsoShader = Memory::ReadCallFrom(get_pattern("E8 ? ? ? ? 41 89 45 ? 41 FF D4 85 C0 0F 88 ? ? ? ? FF C3 49 83 C5 ? 49 83 C7 ? 81 FB ? ? ? ? 72 ? 41 FF D4"));
+	void* loadVsoShader = Memory::ReadCallFrom(get_pattern("E8 ? ? ? ? 41 89 07 41 FF D4 85 C0 0F 88"));
 
 	hook_OEAddUSMFile = (t_OEAddUSMFile)ReadCallFrom(get_pattern("E8 ? ? ? ? C7 86 ? ? ? ? ? ? ? ? 0F B6 84 24"));
 
@@ -70,6 +74,42 @@ bool ParlessGameY0::hook_add_file()
 	if (MH_EnableHook(hook_OEAddUSMFile) != MH_OK)
 	{
 		cout << "Hook could not be enabled. Aborting.\n";
+		return false;
+	}
+
+	if (MH_CreateHook(loadFxoShader, &CBaseParlessGameOE::OEShaderEntryFXO, reinterpret_cast<LPVOID*>(&orgOEShaderEntryFXO)) != MH_OK)
+	{
+		cout << "FXO Hook creation failed. Aborting.\n";
+		return false;
+	}
+
+	if (MH_EnableHook(loadFxoShader) != MH_OK)
+	{
+		cout << "FXO Hook could not be enabled. Aborting.\n";
+		return false;
+	}
+
+	if (MH_CreateHook(loadPsoShader, &CBaseParlessGameOE::OEShaderEntryPSO, reinterpret_cast<LPVOID*>(&orgOEShaderEntryPSO)) != MH_OK)
+	{
+		cout << "PSO Hook creation failed. Aborting.\n";
+		return false;
+	}
+
+	if (MH_EnableHook(loadPsoShader) != MH_OK)
+	{
+		cout << "PSO Hook could not be enabled. Aborting.\n";
+		return false;
+	}
+
+	if (MH_CreateHook(loadVsoShader, &CBaseParlessGameOE::OEShaderEntryVSO, reinterpret_cast<LPVOID*>(&orgOEShaderEntryVSO)) != MH_OK)
+	{
+		cout << "VSO Hook creation failed. Aborting.\n";
+		return false;
+	}
+
+	if (MH_EnableHook(loadVsoShader) != MH_OK)
+	{
+		cout << "VSO Hook could not be enabled. Aborting.\n";
 		return false;
 	}
 
