@@ -8,6 +8,10 @@ t_CriBind CBaseParlessGame::org_BindDir = NULL;
 t_CriBind(*CBaseParlessGame::hook_BindCpk) = NULL;
 CBaseParlessGame* CBaseParlessGame::instance = NULL;
 
+__int64 (*CBaseParlessGame::orgShaderEntryFXO)(char* filePath);
+__int64 (*CBaseParlessGame::orgShaderEntryVSO)(char* filePath);
+__int64 (*CBaseParlessGame::orgShaderEntryPSO)(char* filePath);
+
 void CBaseParlessGame::init()
 {
 	m_gameMap = get_game_map(locale);

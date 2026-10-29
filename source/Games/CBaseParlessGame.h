@@ -84,6 +84,10 @@ public:
 	static t_CriBind org_BindCpk;
 	static t_CriBind org_BindDir;
 
+	static __int64 (*orgShaderEntryVSO)(char* path);
+	static __int64 (*orgShaderEntryPSO)(char* path);
+	static __int64 (*orgShaderEntryFXO)(char* path);
+
 	
 	static int BindCpk(void* param_1, void* param_2, const char* path, void* param_4, int param_5, void* bindId, int param_7)
 	{
@@ -99,6 +103,36 @@ public:
 
 	static t_parlessRename parless_rename_func;
 	static t_CriBindPath parless_cpk_bind_path_func;
+
+	static __int64 ShaderEntryFXO(char* filePath)
+	{
+		char buf[272];
+		strcpy_s(buf, 256, filePath);
+
+		RenameFilePaths(buf);
+
+		return orgShaderEntryFXO(filePath);
+	};
+
+	static __int64 ShaderEntryVSO(char* filePath)
+	{
+		char buf[272];
+		strcpy_s(buf, 256, filePath);
+
+		RenameFilePaths(buf);
+
+		return orgShaderEntryVSO(filePath);
+	};
+
+	static __int64 ShaderEntryPSO(char* filePath)
+	{
+		char buf[272];
+		strcpy_s(buf, 256, filePath);
+
+		RenameFilePaths(buf);
+
+		return orgShaderEntryPSO(filePath);
+	};
 
 protected:
 	parless_stringmap m_gameMap;

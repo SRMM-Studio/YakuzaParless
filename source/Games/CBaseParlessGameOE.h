@@ -10,9 +10,6 @@ public:
 	static __int64 (*orgOELoadStream)(__int64 thisObj, char* fullPath);
 	typedef void* (*t_OEAddUSMFile)(__int64 a1, char* filePath, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11);
 	static __int64 (*orgOEMotionArchiveEntry)(__int64 a1, char* filePath, int a3, int a4, int a5, char a6);
-	static __int64 (*orgOEShaderEntryVSO)(char* path);
-	static __int64 (*orgOEShaderEntryPSO)(char* path);
-	static __int64 (*orgOEShaderEntryFXO)(char* path);
 
 	static t_OEAddUSMFile hook_OEAddUSMFile;
 	static t_OEAddUSMFile org_OEAddUSMFile;
@@ -32,35 +29,5 @@ public:
 
 		RenameFilePaths(buf);
 		return orgOEMotionArchiveEntry(a1, buf, a3, a4, a5, a6);
-	};
-
-	static __int64 OEShaderEntryFXO(char* filePath)
-	{
-		char buf[272];
-		strcpy_s(buf, 256, filePath);
-
-		RenameFilePaths(buf);
-		
-		return orgOEShaderEntryFXO(filePath);
-	};
-
-	static __int64 OEShaderEntryVSO(char* filePath)
-	{
-		char buf[272];
-		strcpy_s(buf, 256, filePath);
-
-		RenameFilePaths(buf);
-
-		return orgOEShaderEntryVSO(filePath);
-	};
-
-	static __int64 OEShaderEntryPSO(char* filePath)
-	{
-		char buf[272];
-		strcpy_s(buf, 256, filePath);
-
-		RenameFilePaths(buf);
-
-		return orgOEShaderEntryPSO(filePath);
 	};
 };

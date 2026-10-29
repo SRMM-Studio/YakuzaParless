@@ -37,29 +37,29 @@ bool ParlessGameYK1R::hook_add_file()
 
 	if (MH_CreateHook(loadStreamFunc, &CBaseParlessGameOE::LoadStreamFile, reinterpret_cast<LPVOID*>(&orgOELoadStream)) != MH_OK)
 	{
-		cout << "Hook creation failed. Aborting.\n";
+		cout << "Stream Hook creation failed. Aborting.\n";
 		return false;
 	}
 
 	if (MH_EnableHook(loadStreamFunc) != MH_OK)
 	{
-		cout << "Hook could not be enabled. Aborting.\n";
+		cout << "Stream Hook could not be enabled. Aborting.\n";
 		return false;
 	}
 
 	if (MH_CreateHook(hook_YK1RAddUSMFile, &CBaseParlessGameOE::AddUSMFile, reinterpret_cast<LPVOID*>(&org_OEAddUSMFile)) != MH_OK)
 	{
-		cout << "Hook creation failed. Aborting.\n";
+		cout << "USM Hook creation failed. Aborting.\n";
 		return false;
 	}
 
 	if (MH_EnableHook(hook_YK1RAddUSMFile) != MH_OK)
 	{
-		cout << "Hook could not be enabled. Aborting.\n";
+		cout << "USM Hook could not be enabled. Aborting.\n";
 		return false;
 	}
 
-	if (MH_CreateHook(loadFxoShader, &CBaseParlessGameOE::OEShaderEntryFXO, reinterpret_cast<LPVOID*>(&orgOEShaderEntryFXO)) != MH_OK)
+	if (MH_CreateHook(loadFxoShader, &CBaseParlessGameOE::ShaderEntryFXO, reinterpret_cast<LPVOID*>(&orgShaderEntryFXO)) != MH_OK)
 	{
 		cout << "FXO Hook creation failed. Aborting.\n";
 		return false;
@@ -71,7 +71,7 @@ bool ParlessGameYK1R::hook_add_file()
 		return false;
 	}
 
-	if (MH_CreateHook(loadPsoShader, &CBaseParlessGameOE::OEShaderEntryPSO, reinterpret_cast<LPVOID*>(&orgOEShaderEntryPSO)) != MH_OK)
+	if (MH_CreateHook(loadPsoShader, &CBaseParlessGameOE::ShaderEntryPSO, reinterpret_cast<LPVOID*>(&orgShaderEntryPSO)) != MH_OK)
 	{
 		cout << "PSO Hook creation failed. Aborting.\n";
 		return false;
@@ -83,7 +83,7 @@ bool ParlessGameYK1R::hook_add_file()
 		return false;
 	}
 
-	if (MH_CreateHook(loadVsoShader, &CBaseParlessGameOE::OEShaderEntryVSO, reinterpret_cast<LPVOID*>(&orgOEShaderEntryVSO)) != MH_OK)
+	if (MH_CreateHook(loadVsoShader, &CBaseParlessGameOE::ShaderEntryVSO, reinterpret_cast<LPVOID*>(&orgShaderEntryVSO)) != MH_OK)
 	{
 		cout << "VSO Hook creation failed. Aborting.\n";
 		return false;

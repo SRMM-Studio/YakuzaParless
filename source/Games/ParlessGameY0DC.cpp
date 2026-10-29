@@ -59,7 +59,7 @@ bool ParlessGameY0DC::hook_add_file()
 		return false;
 	}
 
-	if (MH_CreateHook(loadFxoShader, &CBaseParlessGameOE::OEShaderEntryFXO, reinterpret_cast<LPVOID*>(&orgOEShaderEntryFXO)) != MH_OK)
+	if (MH_CreateHook(loadFxoShader, &CBaseParlessGameOE::ShaderEntryFXO, reinterpret_cast<LPVOID*>(&orgShaderEntryFXO)) != MH_OK)
 	{
 		cout << "FXO Hook creation failed. Aborting.\n";
 		return false;
@@ -71,7 +71,7 @@ bool ParlessGameY0DC::hook_add_file()
 		return false;
 	}
 
-	if (MH_CreateHook(loadPsoShader, &CBaseParlessGameOE::OEShaderEntryPSO, reinterpret_cast<LPVOID*>(&orgOEShaderEntryPSO)) != MH_OK)
+	if (MH_CreateHook(loadPsoShader, &CBaseParlessGameOE::ShaderEntryPSO, reinterpret_cast<LPVOID*>(&orgShaderEntryPSO)) != MH_OK)
 	{
 		cout << "PSO Hook creation failed. Aborting.\n";
 		return false;
@@ -83,7 +83,7 @@ bool ParlessGameY0DC::hook_add_file()
 		return false;
 	}
 
-	if (MH_CreateHook(loadVsoShader, &CBaseParlessGameOE::OEShaderEntryVSO, reinterpret_cast<LPVOID*>(&orgOEShaderEntryVSO)) != MH_OK)
+	if (MH_CreateHook(loadVsoShader, &CBaseParlessGameOE::ShaderEntryVSO, reinterpret_cast<LPVOID*>(&orgShaderEntryVSO)) != MH_OK)
 	{
 		cout << "VSO Hook creation failed. Aborting.\n";
 		return false;

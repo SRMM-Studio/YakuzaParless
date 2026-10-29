@@ -7,11 +7,23 @@ public:
 	const char* modded_ubik_path = "data/../mods/Parless/ubik/\0";
 	virtual std::string translate_path(std::string path, int indexOfData) override;
 
+	static __int64 (*orgShaderEntryCSO)(char* path);
+
 	typedef __int64 (*t_orgVF5FSROMLoadFile)(void* a1, char* path, int a3);
 	static t_orgVF5FSROMLoadFile orgVF5FSROMAddFileEntry;
 
 	typedef __int64 (*t_orgVF5FSROMLoadStreamFile)(void* a1, char* path, int a3);
 	static t_orgVF5FSROMLoadStreamFile orgVF5FSROMLoadStreamFile;
+
+	static __int64 ShaderEntryCSO(char* filePath)
+	{
+		char buf[272];
+		strcpy_s(buf, 256, filePath);
+
+		RenameFilePaths(buf);
+
+		return orgShaderEntryCSO(filePath);
+	};
 
 	virtual bool enable_vf5fs_support(bool arcadeSupportEnabled) 
 	{

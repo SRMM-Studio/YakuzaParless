@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <filesystem>
 
+__int64 (*CBaseParlessGameDE::orgShaderEntryCSO)(char* filePath);
+
 CBaseParlessGameDE::t_orgVF5FSROMLoadFile CBaseParlessGameDE::orgVF5FSROMAddFileEntry = NULL;
 CBaseParlessGameDE::t_orgVF5FSROMLoadStreamFile CBaseParlessGameDE::orgVF5FSROMLoadStreamFile = NULL;
 
